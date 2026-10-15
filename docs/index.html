@@ -374,6 +374,27 @@ section { padding: 84px 0; }
 .note p { font-size: 14.5px; margin-top: 6px; color: var(--text-muted); }
 .note.blue { border-left-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, transparent); }
 
+/* Giris bilgileri kutusu */
+.creds { margin-top: 11px; display: flex; flex-direction: column; gap: 7px; }
+.creds > div { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.creds span { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); min-width: 56px; }
+.creds code { font-size: 13px; font-weight: 700; }
+/* Sifre sayfada yazmiyor: sayfa herkese acik bir adreste duruyor. */
+.creds em { font-style: normal; font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* Yardim blogu */
+.help {
+  margin-top: 26px; display: flex; gap: 16px; align-items: flex-start;
+  background: var(--dark); color: #fff; border-radius: var(--radius); padding: 22px 24px;
+}
+.help-mark {
+  flex: 0 0 34px; height: 34px; border-radius: 50%;
+  background: var(--orange); color: #fff;
+  display: grid; place-items: center; font-weight: 900; font-size: 17px;
+}
+.help b { font-size: 16px; font-weight: 800; display: block; margin-bottom: 5px; }
+.help p { font-size: 14.5px; color: rgba(255,255,255,.75); }
+
 /* ── FAQ ────────────────────────────────────────────────────── */
 .faq { display: grid; gap: 10px; max-width: 820px; }
 details { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
@@ -396,6 +417,103 @@ footer .brand-mark { color: #fff; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Print mode — reached with ?print=tr or ?print=en, and used to
+   generate the PDF. Everything interactive is flattened: all four
+   stations are listed, every FAQ entry is open, nothing animates.
+   ────────────────────────────────────────────────────────────── */
+@page { size: A4; margin: 14mm 13mm; }
+
+body.printing {
+  --bg: #FFFFFF; --bg-alt: #F6F6F6; --surface: #FFFFFF;
+  --text: #363636; --text-muted: #5E5E5E; --border: #D8D8D8;
+  --shadow: none; --shadow-lg: none;
+  font-size: 11.5px;
+}
+body.printing .nav,
+body.printing .hero-btns,
+body.printing .picker,
+body.printing #flowDevice,
+body.printing .scan-caption { display: none; }
+
+body.printing .reveal { opacity: 1; transform: none; }
+body.printing *, body.printing *::before, body.printing *::after { animation: none !important; transition: none !important; }
+
+body.printing .hero { padding: 26px 0 28px; }
+body.printing .hero-grid { grid-template-columns: 1.25fr .75fr; gap: 26px; }
+body.printing .hero h1 { font-size: 30px; }
+body.printing .hero-sub { font-size: 12.5px; margin-top: 10px; }
+body.printing .hero-stats { margin-top: 18px; padding-top: 14px; gap: 22px; }
+body.printing .hero-stat b { font-size: 15px; }
+body.printing .hero-stat span { font-size: 10px; }
+body.printing .scanner { height: 120px; }
+body.printing .scanner .bars i { height: 62px; }
+body.printing .beam { display: none; }
+
+body.printing section { padding: 22px 0 6px; break-inside: auto; }
+body.printing .sec-head { margin-bottom: 16px; }
+body.printing .sec-head h2 { font-size: 19px; }
+body.printing .sec-head p { font-size: 12px; margin-top: 7px; }
+body.printing .eyebrow { font-size: 9px; margin-bottom: 9px; }
+
+/* A4 genisligi mobil kirilma noktalarini tetikliyor; kagitta cok
+   sutunlu duzeni geri aliyoruz. */
+body.printing .cards { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+body.printing .install { grid-template-columns: repeat(2, 1fr); }
+body.printing .card { padding: 13px; break-inside: avoid; }
+body.printing .card-num { width: 24px; height: 24px; font-size: 12px; margin-bottom: 8px; }
+body.printing .card h3 { font-size: 13px; }
+body.printing .card p { font-size: 11px; }
+
+/* All stations, one after another */
+body.printing .flow-grid { display: block; }
+body.printing .pflow { break-inside: avoid; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+body.printing .pflow:last-child { border-bottom: 0; }
+body.printing .pflow-h { display: flex; align-items: baseline; gap: 9px; margin-bottom: 9px; }
+body.printing .pflow-h b { font-size: 15px; font-weight: 900; }
+body.printing .pflow-h code { font-size: 10.5px; color: var(--text-muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
+body.printing .chip { font-size: 10.5px; padding: 3px 9px; }
+body.printing .flow-meta { margin-bottom: 11px; gap: 7px; }
+body.printing .step { padding-bottom: 12px; gap: 11px; }
+body.printing .step-dot { flex: 0 0 24px; height: 24px; font-size: 11px; }
+body.printing .steps::before { left: 11px; }
+body.printing .step-body h4 { font-size: 12.5px; margin: 3px 0 2px; }
+body.printing .step-body p { font-size: 11px; }
+body.printing .step-tag { font-size: 9px; margin-top: 4px; padding: 2px 7px; }
+
+body.printing .gallery { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
+body.printing .shot { break-inside: avoid; gap: 9px; }
+/* Orantili kucultme: genisligi kismak ic yazilari tasirdigi icin tum
+   maketi zoom ile olcekliyoruz, boylece oranlar birebir korunuyor. */
+body.printing .device { zoom: .85; }
+body.printing .shot-cap b { font-size: 11.5px; }
+body.printing .shot-cap span { font-size: 10px; }
+
+body.printing .install { gap: 10px; }
+body.printing .ins { padding: 13px; gap: 11px; break-inside: avoid; }
+body.printing .ins-n { flex: 0 0 22px; height: 22px; font-size: 11px; }
+body.printing .ins h4 { font-size: 12.5px; }
+body.printing .ins p { font-size: 11px; }
+body.printing .ins code { font-size: 10px; padding: 5px 8px; margin-top: 6px; }
+body.printing .note { margin-top: 12px; padding: 11px 14px; break-inside: avoid; }
+body.printing .note p { font-size: 11px; }
+
+body.printing details { break-inside: avoid; }
+body.printing summary { padding: 9px 13px; font-size: 12px; }
+body.printing summary::before { content: "›"; }
+body.printing details p { padding: 0 13px 11px 30px; font-size: 11px; }
+body.printing .faq { gap: 6px; max-width: none; }
+
+body.printing footer { padding: 16px 0; font-size: 10px; margin-top: 18px; }
+
+body.printing .page-break { break-before: page; }
+
+@media print {
+  body.printing { font-size: 11px; }
+  body.printing .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.printing * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 </head>
@@ -503,21 +621,45 @@ footer .brand-mark { color: #fff; }
     <div class="install">
       <div class="ins reveal"><div class="ins-n">1</div><div>
         <h4 data-i18n="ins.1t"></h4><p data-i18n="ins.1d"></p>
-        <code>https://gkgm.sgs.com.tr/health</code>
+        <div class="creds">
+          <div><span data-i18n="ins.credUser"></span><code>snapsync.sgs@gmail.com</code></div>
+          <div><span data-i18n="ins.credPass"></span><em data-i18n="ins.credAsk"></em></div>
+        </div>
       </div></div>
+
       <div class="ins reveal"><div class="ins-n">2</div><div>
-        <h4 data-i18n="ins.2t"></h4><p data-i18n="ins.2d"></p>
+        <h4 data-i18n="ins.2t"></h4><p data-i18n-html="ins.2d"></p>
       </div></div>
+
       <div class="ins reveal"><div class="ins-n">3</div><div>
         <h4 data-i18n="ins.3t"></h4><p data-i18n="ins.3d"></p>
         <code data-i18n="ins.3c"></code>
       </div></div>
+
       <div class="ins reveal"><div class="ins-n">4</div><div>
-        <h4 data-i18n="ins.4t"></h4><p data-i18n-html="ins.4d"></p>
+        <h4 data-i18n="ins.4t"></h4><p data-i18n="ins.4d"></p>
+        <code data-i18n="ins.4c"></code>
+      </div></div>
+
+      <div class="ins reveal"><div class="ins-n">5</div><div>
+        <h4 data-i18n="ins.5t"></h4><p data-i18n-html="ins.5d"></p>
+      </div></div>
+
+      <div class="ins reveal"><div class="ins-n">6</div><div>
+        <h4 data-i18n="ins.6t"></h4><p data-i18n-html="ins.6d"></p>
       </div></div>
     </div>
+
     <div class="note reveal"><b data-i18n="ins.mdmT"></b><p data-i18n-html="ins.mdmD"></p></div>
     <div class="note blue reveal"><b data-i18n="ins.updT"></b><p data-i18n="ins.updD"></p></div>
+
+    <div class="help reveal">
+      <div class="help-mark">?</div>
+      <div>
+        <b data-i18n="ins.helpT"></b>
+        <p data-i18n="ins.helpD"></p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -625,20 +767,29 @@ footer .brand-mark { color: #fff; }
 
       "ins.eyebrow": "Kurulum",
       "ins.title": "Cihaza yüklemek",
-      "ins.sub": "Yalnızca Android. Kendi kontrolündeki bir cihazda beş dakika sürer.",
-      "ins.1t": "Gereksinimleri kontrol et",
-      "ins.1d": "Android tablet ya da telefon, SGS Microsoft hesabı ve SnapSync API'sine ulaşabilen bir bağlantı. Mobil veri yeterli.",
-      "ins.2t": "APK'yı indir",
-      "ins.2d": "Sana iletilen derleme bağlantısını kullan. Dosyayı kendine kaydet — derleme bağlantıları bir süre sonra siliniyor, kurulu uygulama silinmiyor.",
-      "ins.3t": "Kuruluma izin ver",
-      "ins.3d": "Android bu kaynaktan kuruluma izin isteyecek. Tarayıcına ya da dosya yöneticine izni ver, sonra APK'yı yeniden aç.",
-      "ins.3c": "Ayarlar › Uygulamalar › Özel erişim › Bilinmeyen uygulamaları yükle",
-      "ins.4t": "Giriş yap ve kamera izni ver",
-      "ins.4d": "Uygulamayı aç, <b>Microsoft ile Giriş Yap</b>'a dokun ve SGS hesabınla gir. İstendiğinde kamera iznini ver — uygulamanın istediği tek izin bu.",
+      "ins.sub": "Yalnızca Android. Adımları sırayla izleyin, yaklaşık beş dakika sürer.",
+      "ins.1t": "Gmail hesabına giriş yapın",
+      "ins.1d": "Cihazdaki Gmail uygulamasını açın ve aşağıdaki hesapla giriş yapın. Hesap zaten ekliyse bu adımı atlayın.",
+      "ins.credUser": "Hesap", "ins.credPass": "Şifre",
+      "ins.credAsk": "Teams üzerinden Fatih Bal'dan isteyin",
+      "ins.2t": "Mailden APK dosyasını indirin",
+      "ins.2d": "Gelen kutusunda <b>Fatih Bal</b> tarafından gönderilmiş bir mail var. İçindeki <b>.apk</b> dosyasının yanındaki indirme simgesine dokunun ve dosyanın inmesini bekleyin.",
+      "ins.3t": "Otomatik Engelleyici'yi kapatın",
+      "ins.3d": "Samsung cihazlarda bu ayar dışarıdan uygulama kurulmasını engeller ve açık kaldığı sürece kurulum tamamlanmaz. Kapatın, kurulum bittikten sonra geri açabilirsiniz.",
+      "ins.3c": "Ayarlar › Güvenlik ve gizlilik › Otomatik Engelleyici › Kapat",
+      "ins.4t": "Chrome'a kurulum izni verin",
+      "ins.4d": "İndirilen dosyaya dokunduğunuzda Android, bu kaynaktan kuruluma izin vermenizi isteyecek. Açılan ekranda izni verin ve geri dönüp dosyaya tekrar dokunun.",
+      "ins.4c": "Ayarlar › Uygulamalar › Chrome › Bilinmeyen uygulamaları yükle › İzin ver",
+      "ins.5t": "Play Store uyarısı çıkarsa",
+      "ins.5d": "Kurulum sırasında Play Store sizi <b>bir uygulamayı güncellemeye</b> yönlendiriyorsa, indirdiğiniz APK dosyasını silin, 2. adıma dönüp yeniden indirin ve kurulumu tekrar deneyin. Hata vermiyorsa bu adımı atlayın.",
+      "ins.6t": "Giriş yapın ve kamera izni verin",
+      "ins.6d": "Uygulamayı açın, <b>Microsoft ile Giriş Yap</b>'a dokunun ve SGS kurumsal hesabınızla girin. İstendiğinde kamera iznini verin — uygulamanın istediği tek izin budur.",
       "ins.mdmT": "Yönetilen cihazlar",
       "ins.mdmD": "Tablet kurumsal cihaz yönetimine kayıtlıysa elden kurulan APK otomatik kaldırılır ve ekranda “Yöneticiniz tarafından silindi” çıkar. O cihazlarda uygulamanın Intune üzerinden line-of-business app olarak dağıtılması ya da <code>com.sgs.snapsync</code> paketinin izinli listeye alınması gerekir. IT'ye sor.",
       "ins.updT": "Güncellemeler",
-      "ins.updD": "Arayüz değişiklikleri kendiliğinden iner — uygulamayı tamamen kapat, aç, bir daha kapat ve aç. Yalnızca uygulamanın kabuğundaki değişiklikler yeni APK gerektirir.",
+      "ins.updD": "Arayüz değişiklikleri kendiliğinden iner — uygulamayı tamamen kapatın, açın, bir daha kapatıp açın. Yalnızca uygulamanın kabuğundaki değişiklikler yeni APK gerektirir.",
+      "ins.helpT": "Takıldığınız yer olursa",
+      "ins.helpD": "Bu adımlarla çözemediğiniz bir sorunla karşılaşırsanız Teams üzerinden Fatih Bal'a ulaşabilirsiniz.",
 
       "faq.eyebrow": "Bilmekte fayda var",
       "faq.title": "Sahada sorulan sorular",
@@ -696,20 +847,29 @@ footer .brand-mark { color: #fff; }
 
       "ins.eyebrow": "Installation",
       "ins.title": "Getting it onto a device",
-      "ins.sub": "Android only. About five minutes on a device you control.",
-      "ins.1t": "Check the requirements",
-      "ins.1d": "An Android tablet or phone, an SGS Microsoft account, and a connection that can reach the SnapSync API. Mobile data is fine.",
-      "ins.2t": "Download the APK",
-      "ins.2d": "Use the build link shared with you. Save the file somewhere safe — build links expire after a while, the installed app does not.",
-      "ins.3t": "Allow the install",
-      "ins.3d": "Android will ask for permission to install from this source. Approve it for your browser or file manager, then open the APK again.",
-      "ins.3c": "Settings › Apps › Special access › Install unknown apps",
-      "ins.4t": "Sign in and allow the camera",
-      "ins.4d": "Open the app, tap <b>Microsoft ile Giriş Yap</b> and sign in with your SGS account. Grant the camera permission when prompted — it is the only permission the app asks for.",
+      "ins.sub": "Android only. Follow the steps in order; it takes about five minutes.",
+      "ins.1t": "Sign in to the Gmail account",
+      "ins.1d": "Open the Gmail app on the device and sign in with the account below. If the account is already added, skip this step.",
+      "ins.credUser": "Account", "ins.credPass": "Password",
+      "ins.credAsk": "Ask Fatih Bal on Teams",
+      "ins.2t": "Download the APK from the email",
+      "ins.2d": "There is an email in the inbox sent by <b>Fatih Bal</b>. Tap the download icon next to the <b>.apk</b> attachment and wait for it to finish.",
+      "ins.3t": "Turn off Auto Blocker",
+      "ins.3d": "On Samsung devices this setting blocks apps installed from outside the store, and the install will not complete while it is on. Turn it off; you can switch it back on once the app is installed.",
+      "ins.3c": "Settings › Security and privacy › Auto Blocker › Off",
+      "ins.4t": "Allow Chrome to install apps",
+      "ins.4d": "When you tap the downloaded file, Android asks you to allow installs from this source. Grant the permission on the screen that opens, then go back and tap the file again.",
+      "ins.4c": "Settings › Apps › Chrome › Install unknown apps › Allow",
+      "ins.5t": "If a Play Store prompt appears",
+      "ins.5d": "If the install redirects you to <b>update an app</b> through the Play Store, delete the downloaded APK, go back to step 2, download it again and retry the install. If no error appears, skip this step.",
+      "ins.6t": "Sign in and allow the camera",
+      "ins.6d": "Open the app, tap <b>Microsoft ile Giriş Yap</b> and sign in with your SGS corporate account. Grant the camera permission when prompted — it is the only permission the app asks for.",
       "ins.mdmT": "Managed devices",
       "ins.mdmD": "If the tablet is enrolled in company device management, a sideloaded APK is removed automatically and the screen shows “Yöneticiniz tarafından silindi”. On those devices the app has to be distributed through Intune as a line-of-business app, or the package <code>com.sgs.snapsync</code> has to be allow-listed. Ask IT.",
       "ins.updT": "Updates",
       "ins.updD": "Interface changes arrive on their own — close the app fully, reopen it, close it once more and reopen. Only changes to the app shell itself need a new APK.",
+      "ins.helpT": "If you get stuck",
+      "ins.helpD": "If you hit a problem these steps do not solve, you can reach Fatih Bal on Teams.",
 
       "faq.eyebrow": "Good to know",
       "faq.title": "Questions that come up on site",
@@ -768,10 +928,18 @@ footer .brand-mark { color: #fff; }
   var lang = "tr";
   var flowKey = "LMF";
 
-  try {
-    var saved = localStorage.getItem("snapsync.lang");
-    if (saved === "tr" || saved === "en") lang = saved;
-  } catch (e) { /* private mode — ignore */ }
+  /* ?print=tr | ?print=en flattens the page for paper; the PDF is
+     generated from exactly this. */
+  var printMatch = /[?&]print=(tr|en)/.exec(location.search);
+  var printing = printMatch !== null;
+  if (printing) {
+    lang = printMatch[1];
+  } else {
+    try {
+      var saved = localStorage.getItem("snapsync.lang");
+      if (saved === "tr" || saved === "en") lang = saved;
+    } catch (e) { /* private mode — ignore */ }
+  }
 
   function t(key) { return (I18N[lang] && I18N[lang][key]) || key; }
 
@@ -914,14 +1082,47 @@ footer .brand-mark { color: #fff; }
     });
   }
 
-  function renderFlow() {
-    var flow = FLOWS[flowKey];
-    var txt = FLOW_TEXT[lang][flowKey];
-    var labels = lang === "tr"
+  /* Paper has no tabs: every station is printed, one after another. */
+  function renderFlowsForPrint() {
+    metaEl.style.display = "none";
+    stepsEl.outerHTML = '<div id="flowSteps">' + ORDER.map(function (key) {
+      var flow = FLOWS[key];
+      var txt = FLOW_TEXT[lang][key];
+      var L = labelsFor();
+
+      var steps =
+        '<li class="step"><div class="step-dot">1</div><div class="step-body">' +
+          "<h4>" + L.scan + "</h4><p>" + txt.entry + "</p></div></li>";
+
+      flow.steps.forEach(function (s, i) {
+        steps += '<li class="step"><div class="step-dot">' + (i + 2) + '</div><div class="step-body">' +
+          "<h4>" + s[lang] + "</h4><p>" + txt["note" + i] + "</p>" +
+          '<span class="step-tag">' + s.rule[lang] + "</span></div></li>";
+      });
+
+      steps += '<li class="step"><div class="step-dot">' + (flow.steps.length + 2) + '</div>' +
+        '<div class="step-body"><h4>' + L.send + "</h4><p>" + L.sendNote + "</p></div></li>";
+
+      return '<div class="pflow">' +
+        '<div class="pflow-h"><b>' + flow.name + "</b><code>" + flow.app + "</code></div>" +
+        '<div class="flow-meta"><span class="chip">' + txt.sub + "</span>" +
+          '<span class="chip">' + L.goes + " <b>" + flow.dest + "</b></span></div>" +
+        '<ol class="steps">' + steps + "</ol></div>";
+    }).join("") + "</div>";
+  }
+
+  function labelsFor() {
+    return lang === "tr"
       ? { goes: "Gider", scan: "Barkodu okut", send: "Gönder",
           sendNote: "Kayıt önce cihaza yazılır, sonra yüklenir. Bağlantı yoksa kuyrukta bekler ve sonra kendi kendine gider." }
       : { goes: "Goes to", scan: "Scan the barcode", send: "Send",
           sendNote: "The record is written to the device first, then uploaded. With no connection it waits in the queue and goes on its own later." };
+  }
+
+  function renderFlow() {
+    var flow = FLOWS[flowKey];
+    var txt = FLOW_TEXT[lang][flowKey];
+    var labels = labelsFor();
 
     metaEl.innerHTML =
       '<span class="chip">' + txt.sub + "</span>" +
@@ -950,26 +1151,49 @@ footer .brand-mark { color: #fff; }
     });
   }
 
+  function shotHtml(markup, title, note) {
+    return '<div class="shot">' + markup +
+      '<div class="shot-cap"><b>' + title + "</b><span>" + note + "</span></div></div>";
+  }
+
   function renderGallery() {
     var flow = FLOWS[flowKey];
-    var shots = [
-      [screenSignin(),         "cap.signin"],
-      [screenHome(flow),       "cap.home"],
-      [screenScan(),           "cap.scan"],
-      [screenCapture(flow),    "cap.capture"],
-      [screenEditor(),         "cap.editor"],
-      [screenQueue(),          "cap.queue"]
-    ];
-    galleryEl.innerHTML = shots.map(function (s) {
-      return '<div class="shot">' + s[0] +
-        '<div class="shot-cap"><b>' + t(s[1]) + "</b><span>" +
-        t(s[1].replace("cap.", "capd.")) + "</span></div></div>";
+
+    if (printing) {
+      /* No tabs on paper, so both capture variants are shown. */
+      var cap = lang === "tr"
+        ? { one: "Fotoğraf çekme · tek aşamalı", oneN: "LMF ve Transitnet. Aşama rozeti yok, sağdaki düğme doğrudan Gönder.",
+            two: "Fotoğraf çekme · iki aşamalı", twoN: "LIMS ve MSM. Üstte 1/2 rozeti, sağdaki düğme Sonraki Aşama." }
+        : { one: "Capture · single stage", oneN: "LMF and Transitnet. No stage badge, the right button sends straight away.",
+            two: "Capture · two stages", twoN: "LIMS and MSM. A 1/2 badge on top, the right button moves to the next stage." };
+
+      galleryEl.innerHTML =
+        shotHtml(screenSignin(), t("cap.signin"), t("capd.signin")) +
+        shotHtml(screenHome(FLOWS.LIMS), t("cap.home"), t("capd.home")) +
+        shotHtml(screenScan(), t("cap.scan"), t("capd.scan")) +
+        shotHtml(screenCapture(FLOWS.LMF), cap.one, cap.oneN) +
+        shotHtml(screenCapture(FLOWS.LIMS), cap.two, cap.twoN) +
+        shotHtml(screenEditor(), t("cap.editor"), t("capd.editor")) +
+        shotHtml(screenQueue(), t("cap.queue"), t("capd.queue"));
+      return;
+    }
+
+    galleryEl.innerHTML = [
+      [screenSignin(),      "cap.signin"],
+      [screenHome(flow),    "cap.home"],
+      [screenScan(),        "cap.scan"],
+      [screenCapture(flow), "cap.capture"],
+      [screenEditor(),      "cap.editor"],
+      [screenQueue(),       "cap.queue"]
+    ].map(function (s) {
+      return shotHtml(s[0], t(s[1]), t(s[1].replace("cap.", "capd.")));
     }).join("");
   }
 
   function renderFaq() {
+    var open = printing ? " open" : "";
     faqEl.innerHTML = FAQ[lang].map(function (row) {
-      return "<details><summary>" + row[0] + "</summary><p>" + row[1] + "</p></details>";
+      return "<details" + open + "><summary>" + row[0] + "</summary><p>" + row[1] + "</p></details>";
     }).join("");
   }
 
@@ -988,6 +1212,14 @@ footer .brand-mark { color: #fff; }
 
   function renderAll() {
     applyText();
+    if (printing) {
+      document.body.classList.add("printing");
+      renderFlowsForPrint();
+      renderGallery();
+      renderFaq();
+      document.getElementById("install").classList.add("page-break");
+      return;
+    }
     renderPickers();
     renderFlow();
     renderGallery();
