@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SnapSync Field</title>
+<meta name="description" content="SnapSync Field — saha belge fotoğrafı toplama ve SGS sistemlerine aktarma. Kullanım ve kurulum rehberi." />
+<style>
+/* ──────────────────────────────────────────────────────────────
+   SGS brand palette. Orange is used sparingly, as in the app.
+   ────────────────────────────────────────────────────────────── */
+:root {
+  --orange:     #FF6600;
+  --dark:       #363636;
+  --grey-mid:   #848484;
+  --grey-soft:  #AAAAAA;
+  --grey-light: #C8C8C8;
+  --red:        #AB2328;
+  --green:      #006A52;
+  --blue:       #005587;
+
+  --bg:         #FFFFFF;
+  --bg-alt:     #F6F6F6;
+  --surface:    #FFFFFF;
+  --text:       #363636;
+  --text-muted: #848484;
+  --border:     #E2E2E2;
+  --shadow:     0 4px 18px rgba(54,54,54,.09);
+  --shadow-lg:  0 18px 48px rgba(54,54,54,.16);
+
+  --radius-sm: 6px;
+  --radius:    12px;
+  --maxw:      1120px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1E1E1E; --bg-alt: #262626; --surface: #2C2C2C;
+    --text: #F2F2F2; --text-muted: #AAAAAA; --border: #3C3C3C;
+    --shadow: 0 4px 18px rgba(0,0,0,.4); --shadow-lg: 0 18px 48px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1E1E1E; --bg-alt: #262626; --surface: #2C2C2C;
+  --text: #F2F2F2; --text-muted: #AAAAAA; --border: #3C3C3C;
+  --shadow: 0 4px 18px rgba(0,0,0,.4); --shadow-lg: 0 18px 48px rgba(0,0,0,.55);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 400 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3 { line-height: 1.15; margin: 0; letter-spacing: -.02em; }
+p { margin: 0; }
+a { color: inherit; }
+
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 16px; }
+
+/* ── Navigation ─────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+}
+.nav-in { display: flex; align-items: center; gap: 16px; height: 62px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.brand-mark {
+  position: relative; font-size: 19px; font-weight: 900;
+  letter-spacing: .02em; color: var(--text);
+}
+.brand-mark::after {
+  content: ""; position: absolute; right: -7px; top: -4px; bottom: -4px;
+  width: 2px; background: var(--orange);
+}
+.brand-name { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+.nav-links { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.nav-links a {
+  text-decoration: none; font-size: 14px; font-weight: 600; color: var(--text-muted);
+  padding: 8px 12px; border-radius: var(--radius-sm); transition: background .18s, color .18s;
+}
+.nav-links a:hover { color: var(--text); background: var(--bg-alt); }
+.nav-cta { background: var(--orange) !important; color: #fff !important; box-shadow: 0 3px 12px rgba(255,102,0,.32); }
+.nav-cta:hover { filter: brightness(1.06); }
+
+/* Language switch */
+.lang { display: flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.lang button {
+  border: 0; background: transparent; cursor: pointer; font-family: inherit;
+  font-size: 12px; font-weight: 800; letter-spacing: .04em;
+  padding: 7px 13px; color: var(--text-muted); transition: background .16s, color .16s;
+}
+.lang button:hover { color: var(--text); }
+.lang button[aria-pressed="true"] { background: var(--dark); color: #fff; }
+
+@media (max-width: 760px) { .nav-links a:not(.nav-cta) { display: none; } }
+
+/* ── Hero ───────────────────────────────────────────────────── */
+.hero { background: var(--dark); color: #fff; padding: 80px 0 96px; overflow: hidden; }
+.hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 44px; } }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 20px;
+}
+.eyebrow::before { content: ""; width: 24px; height: 2px; background: var(--orange); }
+
+.hero h1 { font-size: clamp(32px, 5.2vw, 54px); font-weight: 900; }
+.hero h1 em { font-style: normal; color: var(--orange); }
+.hero-sub { margin-top: 20px; font-size: 17px; line-height: 1.7; color: rgba(255,255,255,.72); max-width: 46ch; }
+.hero-btns { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 22px; border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 800; text-decoration: none;
+  border: 1px solid transparent; cursor: pointer;
+  transition: transform .16s, filter .16s, background .16s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--orange); color: #fff; box-shadow: 0 6px 20px rgba(255,102,0,.34); }
+.btn-primary:hover { filter: brightness(1.07); }
+.btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
+.btn-ghost:hover { background: rgba(255,255,255,.08); }
+
+.hero-stats {
+  margin-top: 44px; display: flex; gap: 36px; flex-wrap: wrap;
+  border-top: 1px solid rgba(255,255,255,.16); padding-top: 24px;
+}
+.hero-stat b { display: block; font-size: 22px; font-weight: 900; color: #fff; }
+.hero-stat span { font-size: 13px; color: rgba(255,255,255,.6); }
+
+/* ── Scanner animation (mirrors the login screen) ───────────── */
+.scanner {
+  position: relative; height: 230px; border-radius: var(--radius);
+  background: rgba(255,255,255,.04);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.bars { display: flex; align-items: center; gap: 4px; padding: 0 20px; }
+.bars i { display: block; height: 120px; border-radius: 1px; background: rgba(255,255,255,.7); }
+.beam { position: absolute; left: 0; right: 0; top: 0; pointer-events: none; animation: sweep 2.6s ease-in-out infinite alternate; }
+.beam::before { content: ""; position: absolute; left: 0; right: 0; top: -28px; height: 56px; background: var(--orange); opacity: .14; }
+.beam::after  { content: ""; position: absolute; left: 0; right: 0; height: 3px; background: var(--orange); }
+@keyframes sweep { from { transform: translateY(10px); } to { transform: translateY(218px); } }
+
+.corner { position: absolute; width: 28px; height: 28px; border: 0 solid var(--orange); }
+.c-tl { top: 0; left: 0;  border-top-width: 3px; border-left-width: 3px;  border-top-left-radius: var(--radius); }
+.c-tr { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: var(--radius); }
+.c-bl { bottom: 0; left: 0;  border-bottom-width: 3px; border-left-width: 3px;  border-bottom-left-radius: var(--radius); }
+.c-br { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; border-bottom-right-radius: var(--radius); }
+
+.scan-caption {
+  margin-top: 14px; text-align: center; font-size: 13px; color: rgba(255,255,255,.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ── Sections ───────────────────────────────────────────────── */
+section { padding: 84px 0; }
+.sec-alt { background: var(--bg-alt); }
+.sec-head { max-width: 62ch; margin-bottom: 40px; }
+.sec-head h2 { font-size: clamp(26px, 3.4vw, 38px); font-weight: 900; }
+.sec-head p { margin-top: 14px; color: var(--text-muted); font-size: 17px; }
+
+/* ── Cards ──────────────────────────────────────────────────── */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 860px) { .cards { grid-template-columns: 1fr; } }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow);
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.card-num {
+  display: inline-grid; place-items: center; width: 34px; height: 34px;
+  border-radius: 50%; background: var(--orange); color: #fff;
+  font-weight: 900; font-size: 15px; margin-bottom: 16px;
+}
+.card h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.card p { color: var(--text-muted); font-size: 15px; }
+
+/* ── Station picker ─────────────────────────────────────────── */
+.picker { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+.tab {
+  display: flex; flex-direction: column; gap: 3px; text-align: left;
+  padding: 13px 20px; border-radius: var(--radius); cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: inherit; transition: all .18s;
+  min-width: 150px;
+}
+.tab:hover { border-color: var(--grey-soft); transform: translateY(-2px); }
+.tab b { font-size: 15px; font-weight: 800; color: var(--text); }
+.tab span {
+  font-size: 11.5px; color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.tab[aria-selected="true"] {
+  background: var(--orange); border-color: var(--orange);
+  box-shadow: 0 6px 18px rgba(255,102,0,.3);
+}
+.tab[aria-selected="true"] b { color: #fff; }
+.tab[aria-selected="true"] span { color: rgba(255,255,255,.82); }
+
+.flow-grid { display: grid; grid-template-columns: 1fr 300px; gap: 48px; align-items: start; }
+@media (max-width: 900px) { .flow-grid { grid-template-columns: 1fr; } }
+
+.flow-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
+.chip {
+  font-size: 12.5px; font-weight: 600;
+  padding: 6px 13px; border-radius: 999px;
+  background: var(--bg); border: 1px solid var(--border); color: var(--text-muted);
+}
+.chip b { color: var(--text); font-weight: 800; font-family: ui-monospace, Menlo, Consolas, monospace; }
+
+.steps { list-style: none; margin: 0; padding: 0; position: relative; }
+.steps::before { content: ""; position: absolute; left: 17px; top: 14px; bottom: 14px; width: 2px; background: var(--border); }
+.step { position: relative; display: flex; gap: 18px; padding-bottom: 26px; }
+.step:last-child { padding-bottom: 0; }
+.step-dot {
+  position: relative; z-index: 1; flex: 0 0 36px; height: 36px;
+  border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface); border: 2px solid var(--orange);
+  color: var(--orange); font-weight: 900; font-size: 14px;
+}
+.sec-alt .step-dot { background: var(--bg-alt); }
+.step-body h4 { margin: 6px 0 4px; font-size: 16px; font-weight: 800; }
+.step-body p { color: var(--text-muted); font-size: 14.5px; }
+.step-tag {
+  display: inline-block; margin-top: 7px;
+  font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--blue); background: color-mix(in srgb, var(--blue) 10%, transparent);
+  padding: 3px 9px; border-radius: 4px;
+}
+
+.fade { animation: fade .32s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── Device mockups ─────────────────────────────────────────── */
+.device { width: 260px; border-radius: 30px; padding: 10px; background: #1A1A1A; box-shadow: var(--shadow-lg); margin: 0 auto; }
+.screen {
+  border-radius: 22px; overflow: hidden; background: #fff;
+  height: 520px; display: flex; flex-direction: column; position: relative;
+}
+.screen.dark { background: var(--dark); }
+
+.sbar {
+  height: 22px; flex: 0 0 22px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px; font-size: 8.5px; font-weight: 700; color: var(--grey-mid);
+}
+.screen.dark .sbar { color: rgba(255,255,255,.55); }
+
+.m-pad { padding: 13px; display: flex; flex-direction: column; gap: 9px; flex: 1; overflow: hidden; }
+
+.m-hero { height: 104px; flex: 0 0 104px; position: relative; background: linear-gradient(135deg, #4A4A4A, #262626); display: grid; place-items: center; }
+.m-hero span { color: #fff; font-weight: 900; font-size: 13px; letter-spacing: .04em; }
+.m-hero::after { content: ""; position: absolute; left: 13px; right: 13px; bottom: 9px; height: 2px; background: var(--orange); opacity: .85; }
+
+.m-card { border: 1px solid var(--grey-light); border-radius: 8px; padding: 9px; background: #fff; display: flex; flex-direction: column; gap: 3px; }
+.m-k { font-size: 7.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--grey-mid); }
+.m-v { font-size: 11.5px; font-weight: 800; color: var(--dark); }
+.m-row { display: flex; gap: 8px; }
+.m-row > * { flex: 1; }
+
+.m-btn { background: var(--orange); color: #fff; text-align: center; padding: 10px 6px; border-radius: 7px; font-weight: 800; font-size: 10px; line-height: 1.2; }
+.m-btn.sec { background: #fff; color: var(--dark); border: 1px solid var(--grey-light); }
+.m-btn.off { background: #fff; color: var(--grey-soft); border: 1px solid var(--grey-light); }
+
+/* Scan screen */
+.m-cam { flex: 1; position: relative; background: #2A2A2A; display: grid; place-items: center; }
+.m-retic { position: relative; width: 150px; height: 95px; }
+.m-retic > i { position: absolute; width: 20px; height: 20px; border: 0 solid var(--orange); }
+.m-retic > i:nth-of-type(1) { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; }
+.m-retic > i:nth-of-type(2) { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; }
+.m-retic > i:nth-of-type(3) { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; }
+.m-retic > i:nth-of-type(4) { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; }
+.m-barcode { position: absolute; inset: 20px 13px; display: flex; gap: 3px; align-items: stretch; }
+.m-barcode b { display: block; background: rgba(255,255,255,.85); border-radius: 1px; }
+
+/* Capture screen — report bar + live camera + photo strip + 2 buttons */
+.m-repbar { display: flex; align-items: center; gap: 9px; padding: 9px 11px; background: #fff; border-bottom: 1px solid var(--grey-light); }
+.m-accent { width: 3px; align-self: stretch; min-height: 26px; border-radius: 2px; background: var(--orange); }
+.m-repinfo { flex: 1; min-width: 0; }
+.m-repno { font-size: 11px; font-weight: 900; color: var(--dark); font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: -.02em; }
+.m-stepbadge { text-align: right; flex: 0 0 auto; }
+.m-stepbadge b { display: block; font-size: 11px; font-weight: 900; color: var(--orange); }
+.m-stepbadge span { font-size: 7px; color: var(--grey-mid); font-weight: 700; }
+
+.m-live { flex: 1; position: relative; background: #2E2E2E; overflow: hidden; }
+.m-live::before {
+  content: ""; position: absolute; inset: 18% 14%;
+  border-radius: 3px; background: linear-gradient(150deg, #6A6A6A, #4A4A4A);
+  box-shadow: 0 6px 20px rgba(0,0,0,.4);
+}
+.m-live::after {
+  content: ""; position: absolute; inset: 18% 14%;
+  background: repeating-linear-gradient(0deg, transparent 0 7px, rgba(255,255,255,.15) 7px 8px);
+}
+
+.m-strip { flex: 0 0 auto; display: flex; gap: 6px; padding: 9px 11px; background: #fff; border-top: 1px solid var(--grey-light); min-height: 50px; align-items: center; }
+.m-sthumb { position: relative; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(140deg, #D8D8D8, #ECECEC); border: 1px solid var(--grey-light); }
+.m-sthumb i { position: absolute; right: -3px; top: -3px; width: 13px; height: 13px; border-radius: 50%; background: var(--orange); color: #fff; font-size: 7px; font-weight: 900; font-style: normal; display: grid; place-items: center; }
+.m-stripempty { font-size: 8px; color: var(--grey-mid); }
+
+.m-acts { display: flex; gap: 7px; padding: 10px 11px 12px; background: #fff; }
+.m-acts > * { flex: 1; }
+
+/* Photo editor — crop rectangle with draggable corners */
+.m-edtop { display: flex; align-items: center; justify-content: space-between; padding: 10px 11px; background: #fff; border-bottom: 1px solid var(--grey-light); }
+.m-edtop span { font-size: 9px; font-weight: 800; color: var(--grey-mid); }
+.m-edtop b { font-size: 10px; font-weight: 900; color: var(--dark); }
+.m-edtop .save { color: var(--orange); }
+.m-edstage { flex: 1; position: relative; background: #2A2A2A; display: grid; place-items: center; padding: 14px; }
+.m-edphoto { position: relative; width: 100%; height: 100%; background: linear-gradient(150deg, #8A8A8A, #5C5C5C); border-radius: 2px; }
+.m-edphoto::after { content: ""; position: absolute; inset: 14%; background: repeating-linear-gradient(0deg, transparent 0 6px, rgba(255,255,255,.18) 6px 7px); }
+.m-edcrop { position: absolute; inset: 16% 12% 22% 12%; border: 1px solid rgba(255,255,255,.9); box-shadow: 0 0 0 9999px rgba(54,54,54,.55); }
+.m-edcrop i { position: absolute; width: 14px; height: 14px; border: 0 solid var(--orange); }
+.m-edcrop i:nth-of-type(1) { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; }
+.m-edcrop i:nth-of-type(2) { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; }
+.m-edcrop i:nth-of-type(3) { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; }
+.m-edcrop i:nth-of-type(4) { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; }
+.m-edhint { text-align: center; font-size: 8px; color: rgba(255,255,255,.65); padding: 8px 10px; background: var(--dark); }
+.m-edtools { display: flex; gap: 7px; padding: 10px 11px 12px; background: var(--dark); }
+.m-edtools > * { flex: 1; text-align: center; padding: 9px; border-radius: 7px; font-size: 9.5px; font-weight: 800; border: 1px solid rgba(255,255,255,.28); color: #fff; }
+.m-edtools .del { border-color: color-mix(in srgb, var(--red) 70%, #fff); color: #FF8A8F; }
+
+/* Hero switcher pill on the home mockup */
+.m-heroswitch { position: absolute; top: 8px; right: 9px; font-size: 7px; font-weight: 800; color: #fff; background: rgba(54,54,54,.72); border: 1px solid rgba(255,255,255,.35); padding: 3px 7px; border-radius: 999px; }
+
+/* Queue screen */
+.m-list { display: flex; flex-direction: column; gap: 7px; }
+.m-item { border: 1px solid var(--grey-light); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.m-item .no { font-size: 10.5px; font-weight: 900; color: var(--dark); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.m-item .mt { font-size: 8px; color: var(--grey-mid); }
+.m-retrybar { background: color-mix(in srgb, var(--orange) 12%, #fff); border: 1px solid color-mix(in srgb, var(--orange) 35%, #fff); color: var(--orange); font-size: 9px; font-weight: 800; padding: 7px; border-radius: 7px; text-align: center; }
+.m-pill { align-self: flex-start; font-size: 8px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: color-mix(in srgb, var(--orange) 14%, #fff); color: var(--orange); }
+.m-pill.err { background: color-mix(in srgb, var(--red) 11%, #fff); color: var(--red); }
+.m-clear { font-size: 8.5px; font-weight: 800; color: var(--red); text-align: center; padding-top: 2px; }
+
+/* Login screen */
+.m-login { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 18px; }
+.m-logo { font-size: 23px; font-weight: 900; color: #fff; position: relative; }
+.m-logo::after { content: ""; position: absolute; right: -6px; top: -3px; bottom: -3px; width: 2px; background: var(--orange); }
+.m-scanbox { position: relative; width: 100%; height: 84px; border-radius: 8px; background: rgba(255,255,255,.05); overflow: hidden; display: grid; place-items: center; }
+.m-scanbox .bars i { height: 50px; background: rgba(255,255,255,.55); }
+.m-scanbox .beam { animation: sweepS 2.6s ease-in-out infinite alternate; }
+@keyframes sweepS { from { transform: translateY(6px); } to { transform: translateY(76px); } }
+.m-title { font-size: 19px; font-weight: 900; color: #fff; }
+
+.shot { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.shot-cap { text-align: center; max-width: 31ch; }
+.shot-cap b { display: block; font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+.shot-cap span { font-size: 14px; color: var(--text-muted); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 44px 20px; }
+
+/* ── Install ────────────────────────────────────────────────── */
+.install { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+@media (max-width: 860px) { .install { grid-template-columns: 1fr; } }
+.ins { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; display: flex; gap: 16px; align-items: flex-start; }
+.ins-n { flex: 0 0 30px; height: 30px; border-radius: 8px; background: var(--dark); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 13px; }
+.ins h4 { margin: 3px 0 6px; font-size: 16px; font-weight: 800; }
+.ins p { font-size: 14.5px; color: var(--text-muted); }
+.ins code, details code, .note code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px; background: var(--bg-alt); border: 1px solid var(--border);
+  padding: 2px 7px; border-radius: 5px; color: var(--text);
+}
+.ins code { display: inline-block; margin-top: 9px; padding: 7px 11px; }
+
+.note { margin-top: 24px; border-left: 3px solid var(--orange); background: color-mix(in srgb, var(--orange) 7%, transparent); padding: 18px 22px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.note b { font-weight: 800; }
+.note p { font-size: 14.5px; margin-top: 6px; color: var(--text-muted); }
+.note.blue { border-left-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, transparent); }
+
+/* Giris bilgileri kutusu */
+.creds { margin-top: 11px; display: flex; flex-direction: column; gap: 7px; }
+.creds > div { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.creds span { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); min-width: 56px; }
+.creds code { font-size: 13px; font-weight: 700; }
+/* Sifre sayfada yazmiyor: sayfa herkese acik bir adreste duruyor. */
+.creds em { font-style: normal; font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* Yardim blogu */
+.help {
+  margin-top: 26px; display: flex; gap: 16px; align-items: flex-start;
+  background: var(--dark); color: #fff; border-radius: var(--radius); padding: 22px 24px;
+}
+.help-mark {
+  flex: 0 0 34px; height: 34px; border-radius: 50%;
+  background: var(--orange); color: #fff;
+  display: grid; place-items: center; font-weight: 900; font-size: 17px;
+}
+.help b { font-size: 16px; font-weight: 800; display: block; margin-bottom: 5px; }
+.help p { font-size: 14.5px; color: rgba(255,255,255,.75); }
+
+/* ── FAQ ────────────────────────────────────────────────────── */
+.faq { display: grid; gap: 10px; max-width: 820px; }
+details { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+summary { padding: 17px 20px; cursor: pointer; font-weight: 700; font-size: 15.5px; list-style: none; display: flex; align-items: center; gap: 12px; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "+"; color: var(--orange); font-weight: 900; font-size: 18px; transition: transform .2s; flex: 0 0 auto; }
+details[open] summary::before { transform: rotate(45deg); }
+details p { padding: 0 20px 18px 52px; color: var(--text-muted); font-size: 15px; }
+
+/* ── Footer ─────────────────────────────────────────────────── */
+footer { background: var(--dark); color: rgba(255,255,255,.62); padding: 48px 0; font-size: 14px; }
+.foot { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: center; }
+footer .brand-mark { color: #fff; }
+
+/* ── Reveal on scroll ───────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Print mode — reached with ?print=tr or ?print=en, and used to
+   generate the PDF. Everything interactive is flattened: all four
+   stations are listed, every FAQ entry is open, nothing animates.
+   ────────────────────────────────────────────────────────────── */
+@page { size: A4; margin: 14mm 13mm; }
+
+body.printing {
+  --bg: #FFFFFF; --bg-alt: #F6F6F6; --surface: #FFFFFF;
+  --text: #363636; --text-muted: #5E5E5E; --border: #D8D8D8;
+  --shadow: none; --shadow-lg: none;
+  font-size: 11.5px;
+}
+body.printing .nav,
+body.printing .hero-btns,
+body.printing .picker,
+body.printing #flowDevice,
+body.printing .scan-caption { display: none; }
+
+body.printing .reveal { opacity: 1; transform: none; }
+body.printing *, body.printing *::before, body.printing *::after { animation: none !important; transition: none !important; }
+
+body.printing .hero { padding: 26px 0 28px; }
+body.printing .hero-grid { grid-template-columns: 1.25fr .75fr; gap: 26px; }
+body.printing .hero h1 { font-size: 30px; }
+body.printing .hero-sub { font-size: 12.5px; margin-top: 10px; }
+body.printing .hero-stats { margin-top: 18px; padding-top: 14px; gap: 22px; }
+body.printing .hero-stat b { font-size: 15px; }
+body.printing .hero-stat span { font-size: 10px; }
+body.printing .scanner { height: 120px; }
+body.printing .scanner .bars i { height: 62px; }
+body.printing .beam { display: none; }
+
+body.printing section { padding: 22px 0 6px; break-inside: auto; }
+body.printing .sec-head { margin-bottom: 16px; }
+body.printing .sec-head h2 { font-size: 19px; }
+body.printing .sec-head p { font-size: 12px; margin-top: 7px; }
+body.printing .eyebrow { font-size: 9px; margin-bottom: 9px; }
+
+/* A4 genisligi mobil kirilma noktalarini tetikliyor; kagitta cok
+   sutunlu duzeni geri aliyoruz. */
+body.printing .cards { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+body.printing .install { grid-template-columns: repeat(2, 1fr); }
+body.printing .card { padding: 13px; break-inside: avoid; }
+body.printing .card-num { width: 24px; height: 24px; font-size: 12px; margin-bottom: 8px; }
+body.printing .card h3 { font-size: 13px; }
+body.printing .card p { font-size: 11px; }
+
+/* All stations, one after another */
+body.printing .flow-grid { display: block; }
+body.printing .pflow { break-inside: avoid; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+body.printing .pflow:last-child { border-bottom: 0; }
+body.printing .pflow-h { display: flex; align-items: baseline; gap: 9px; margin-bottom: 9px; }
+body.printing .pflow-h b { font-size: 15px; font-weight: 900; }
+body.printing .pflow-h code { font-size: 10.5px; color: var(--text-muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
+body.printing .chip { font-size: 10.5px; padding: 3px 9px; }
+body.printing .flow-meta { margin-bottom: 11px; gap: 7px; }
+body.printing .step { padding-bottom: 12px; gap: 11px; }
+body.printing .step-dot { flex: 0 0 24px; height: 24px; font-size: 11px; }
+body.printing .steps::before { left: 11px; }
+body.printing .step-body h4 { font-size: 12.5px; margin: 3px 0 2px; }
+body.printing .step-body p { font-size: 11px; }
+body.printing .step-tag { font-size: 9px; margin-top: 4px; padding: 2px 7px; }
+
+body.printing .gallery { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
+body.printing .shot { break-inside: avoid; gap: 9px; }
+/* Orantili kucultme: genisligi kismak ic yazilari tasirdigi icin tum
+   maketi zoom ile olcekliyoruz, boylece oranlar birebir korunuyor. */
+body.printing .device { zoom: .85; }
+body.printing .shot-cap b { font-size: 11.5px; }
+body.printing .shot-cap span { font-size: 10px; }
+
+body.printing .install { gap: 10px; }
+body.printing .ins { padding: 13px; gap: 11px; break-inside: avoid; }
+body.printing .ins-n { flex: 0 0 22px; height: 22px; font-size: 11px; }
+body.printing .ins h4 { font-size: 12.5px; }
+body.printing .ins p { font-size: 11px; }
+body.printing .ins code { font-size: 10px; padding: 5px 8px; margin-top: 6px; }
+body.printing .note { margin-top: 12px; padding: 11px 14px; break-inside: avoid; }
+body.printing .note p { font-size: 11px; }
+
+body.printing details { break-inside: avoid; }
+body.printing summary { padding: 9px 13px; font-size: 12px; }
+body.printing summary::before { content: "›"; }
+body.printing details p { padding: 0 13px 11px 30px; font-size: 11px; }
+body.printing .faq { gap: 6px; max-width: none; }
+
+body.printing footer { padding: 16px 0; font-size: 10px; margin-top: 18px; }
+
+body.printing .page-break { break-before: page; }
+
+@media print {
+  body.printing { font-size: 11px; }
+  body.printing .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.printing * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <div class="brand">
+      <span class="brand-mark">SGS</span>
+      <span class="brand-name">SnapSync</span>
+    </div>
+    <div class="nav-links">
+      <a href="#how"     data-i18n="nav.how"></a>
+      <a href="#screens" data-i18n="nav.screens"></a>
+      <a href="#faq"     data-i18n="nav.faq"></a>
+      <a href="#install" class="nav-cta" data-i18n="nav.install"></a>
+      <div class="lang">
+        <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow" data-i18n="hero.eyebrow"></div>
+      <h1 data-i18n-html="hero.title"></h1>
+      <p class="hero-sub" data-i18n="hero.sub"></p>
+      <div class="hero-btns">
+        <a href="#install" class="btn btn-primary" data-i18n="hero.cta1"></a>
+        <a href="#how" class="btn btn-ghost" data-i18n="hero.cta2"></a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><b data-i18n="hero.s1t"></b><span data-i18n="hero.s1d"></span></div>
+        <div class="hero-stat"><b>~400 KB</b><span data-i18n="hero.s2d"></span></div>
+        <div class="hero-stat"><b data-i18n="hero.s3t"></b><span data-i18n="hero.s3d"></span></div>
+      </div>
+    </div>
+    <div>
+      <div class="scanner">
+        <div class="bars" id="heroBars"></div>
+        <div class="beam"></div>
+        <i class="corner c-tl"></i><i class="corner c-tr"></i>
+        <i class="corner c-bl"></i><i class="corner c-br"></i>
+      </div>
+      <div class="scan-caption" data-i18n="hero.scan"></div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="idea.eyebrow"></div>
+      <h2 data-i18n="idea.title"></h2>
+      <p data-i18n="idea.sub"></p>
+    </div>
+    <div class="cards">
+      <div class="card reveal"><div class="card-num">1</div><h3 data-i18n="idea.c1t"></h3><p data-i18n="idea.c1d"></p></div>
+      <div class="card reveal"><div class="card-num">2</div><h3 data-i18n="idea.c2t"></h3><p data-i18n="idea.c2d"></p></div>
+      <div class="card reveal"><div class="card-num">3</div><h3 data-i18n="idea.c3t"></h3><p data-i18n="idea.c3d"></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-alt" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="how.eyebrow"></div>
+      <h2 data-i18n="how.title"></h2>
+      <p data-i18n="how.sub"></p>
+    </div>
+    <div class="picker" role="tablist" data-picker></div>
+    <div class="flow-grid">
+      <div>
+        <div class="flow-meta" id="flowMeta"></div>
+        <ol class="steps" id="flowSteps"></ol>
+      </div>
+      <div id="flowDevice"></div>
+    </div>
+  </div>
+</section>
+
+<section id="screens">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="scr.eyebrow"></div>
+      <h2 data-i18n="scr.title"></h2>
+      <p data-i18n="scr.sub"></p>
+    </div>
+    <div class="picker" role="tablist" data-picker></div>
+    <div class="gallery" id="gallery"></div>
+  </div>
+</section>
+
+<section class="sec-alt" id="install">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="ins.eyebrow"></div>
+      <h2 data-i18n="ins.title"></h2>
+      <p data-i18n="ins.sub"></p>
+    </div>
+    <div class="install">
+      <div class="ins reveal"><div class="ins-n">1</div><div>
+        <h4 data-i18n="ins.1t"></h4><p data-i18n="ins.1d"></p>
+        <div class="creds">
+          <div><span data-i18n="ins.credUser"></span><code>snapsync.sgs@gmail.com</code></div>
+          <div><span data-i18n="ins.credPass"></span><em data-i18n="ins.credAsk"></em></div>
+        </div>
+      </div></div>
+
+      <div class="ins reveal"><div class="ins-n">2</div><div>
+        <h4 data-i18n="ins.2t"></h4><p data-i18n-html="ins.2d"></p>
+      </div></div>
+
+      <div class="ins reveal"><div class="ins-n">3</div><div>
+        <h4 data-i18n="ins.3t"></h4><p data-i18n="ins.3d"></p>
+        <code data-i18n="ins.3c"></code>
+      </div></div>
+
+      <div class="ins reveal"><div class="ins-n">4</div><div>
+        <h4 data-i18n="ins.4t"></h4><p data-i18n="ins.4d"></p>
+        <code data-i18n="ins.4c"></code>
+      </div></div>
+
+      <div class="ins reveal"><div class="ins-n">5</div><div>
+        <h4 data-i18n="ins.5t"></h4><p data-i18n-html="ins.5d"></p>
+      </div></div>
+
+      <div class="ins reveal"><div class="ins-n">6</div><div>
+        <h4 data-i18n="ins.6t"></h4><p data-i18n-html="ins.6d"></p>
+      </div></div>
+    </div>
+
+    <div class="note reveal"><b data-i18n="ins.mdmT"></b><p data-i18n-html="ins.mdmD"></p></div>
+    <div class="note blue reveal"><b data-i18n="ins.updT"></b><p data-i18n="ins.updD"></p></div>
+
+    <div class="help reveal">
+      <div class="help-mark">?</div>
+      <div>
+        <b data-i18n="ins.helpT"></b>
+        <p data-i18n="ins.helpD"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow" data-i18n="faq.eyebrow"></div>
+      <h2 data-i18n="faq.title"></h2>
+    </div>
+    <div class="faq" id="faqList"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div class="brand">
+      <span class="brand-mark">SGS</span>
+      <span class="brand-name" style="color:rgba(255,255,255,.6)">SnapSync Field</span>
+    </div>
+    <div data-i18n="foot"></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Barcode bar widths — fixed pattern, identical on every load. */
+  var PATTERN = [3,1,2,1,4,1,1,2,3,1,2,5,1,1,3,2,1,4,1,2,2,1,3,1,2,4,1,1];
+  var DEMO_NO = "26TR341300306405";
+
+  /* ── Station flows ──────────────────────────────────────────
+     Mirrors src/lib/flows.ts. When a new assignment is added
+     there, add it here too. Tenant ids are intentionally not
+     shown — they mean nothing to the reader.                    */
+  var FLOWS = {
+    LMF: {
+      name: "LMF", app: "LMF_NK", dest: "LMF", multi: false,
+      steps: [{ tr: "Rapor Fotoğrafları", en: "Report Photos", rule: { tr: "En az 1", en: "One or more" } }]
+    },
+    LIMS: {
+      name: "LIMS", app: "LIMS_IST_NK", dest: "LIMS", multi: true,
+      steps: [
+        { tr: "Numune Fotoğrafları", en: "Sample Photos",   rule: { tr: "Tam 1 adet", en: "Exactly 1" } },
+        { tr: "Belge Fotoğrafları",  en: "Document Photos", rule: { tr: "Tam 1 adet", en: "Exactly 1" } }
+      ]
+    },
+    TRANSISNET: {
+      name: "Transitnet", app: "TransitnetDepo", dest: "Transitnet", multi: false,
+      steps: [{ tr: "Operasyon Fotoğrafları", en: "Operation Photos", rule: { tr: "En az 1", en: "One or more" } }]
+    },
+    MSM: {
+      name: "MSM", app: "LIMS_MSM_NK", dest: "MSM", multi: true,
+      steps: [
+        { tr: "Numune Fotoğrafları", en: "Sample Photos",   rule: { tr: "Tam 1 adet", en: "Exactly 1" } },
+        { tr: "Belge Fotoğrafları",  en: "Document Photos", rule: { tr: "Tam 1 adet", en: "Exactly 1" } }
+      ]
+    }
+  };
+  var ORDER = ["LMF", "LIMS", "TRANSISNET", "MSM"];
+
+  var FLOW_TEXT = {
+    tr: {
+      LMF:        { sub: "Food İstanbul dışındaki rapor istasyonları.", entry: "İş emri etiketini okut. LMF'te etiket TR + 7 rakam kalıbına uymak zorunda; sisteme yalnızca rakamlar gider, harf öneki kırpılır.", note0: "Raporun gerektirdiği kadar fotoğraf çek, sonra gönder. Tek ekran, aşama yok." },
+      LIMS:       { sub: "Numune kabul istasyonu.", entry: "Numune etiketini okut. Harf içerebilir, uzunluğu sabit değil; hiçbir şey kırpılmaz.", note0: "Numunenin kendisinin tek fotoğrafı.", note1: "Yanındaki evrak. Numune fotoğrafından ayrı saklanır." },
+      TRANSISNET: { sub: "Depo operasyon istasyonu.", entry: "Operasyon etiketini okut — örneğin Z34085-26-0014184. Harfler yazıldığı gibi korunur. Etiket okunmazsa elle giriş var.", note0: "Tek ekran, LMF ile aynı ritim." },
+      MSM:        { sub: "Food İstanbul numune kabul.", entry: "Numune etiketini okut, LIMS ile birebir aynı.", note0: "Ekranda LIMS akışının aynısı.", note1: "Uygulama aynı davranır; kaydı MSM altına sunucu yazar." }
+    },
+    en: {
+      LMF:        { sub: "Report stations outside Food Istanbul.", entry: "Scan the work-order label. For LMF the label must match TR + 7 digits, and only the digits are sent on — the letter prefix is trimmed.", note0: "Take as many photos as the report needs, then send. One screen, no stages." },
+      LIMS:       { sub: "Sample reception station.", entry: "Scan the sample label. Letters are allowed and the length is not fixed, so nothing is trimmed.", note0: "A single photo of the sample itself.", note1: "The accompanying paperwork. Stored separately from the sample photo." },
+      TRANSISNET: { sub: "Warehouse operation station.", entry: "Scan the operation label — for example Z34085-26-0014184. Letters are kept exactly as printed. Manual entry is available if the label will not read.", note0: "Single screen, same rhythm as LMF." },
+      MSM:        { sub: "Food Istanbul sample reception.", entry: "Scan the sample label, exactly as in LIMS.", note0: "Identical to the LIMS flow on screen.", note1: "The app behaves the same; the server files the record under MSM." }
+    }
+  };
+
+  /* ── Copy ───────────────────────────────────────────────────── */
+  var I18N = {
+    tr: {
+      "nav.how": "Nasıl çalışır", "nav.screens": "Ekranlar", "nav.faq": "SSS", "nav.install": "Kurulum",
+
+      "hero.eyebrow": "SGS İç Uygulaması",
+      "hero.title": "Okut. Çek. <em>Gerisini kendi halleder.</em>",
+      "hero.sub": "SnapSync Field, SnapSync'in saha ayağı. Barkodu okut, belgeleri fotoğrafla ve işine bak — kayıt önce cihazda kesinleşir, bağlantı bulunca kendi kendine gider.",
+      "hero.cta1": "Kurulum rehberi", "hero.cta2": "Nasıl çalışır",
+      "hero.s1t": "Çevrimdışı", "hero.s1d": "Sinyal olmadan da çalışır",
+      "hero.s2d": "Ortalama fotoğraf boyutu",
+      "hero.s3t": "4 sistem", "hero.s3d": "Tek uygulama",
+      "hero.scan": "barkod bekleniyor…",
+
+      "idea.eyebrow": "Fikir",
+      "idea.title": "Sahada üç hareket. Gerisi kendiliğinden.",
+      "idea.sub": "Doldurulacak form yok, seçilecek sistem yok, gün sonunda hatırlanacak bir şey yok. Hangi ekranı göreceğine istasyonun karar verir.",
+      "idea.c1t": "Okut", "idea.c1d": "Kamerayı barkoda tut. Uygulama okur, istasyonunun kurallarına göre doğrular ve kilitler.",
+      "idea.c2t": "Fotoğrafla", "idea.c2d": "İstasyonun istediği fotoğrafları çek. Her biri ağa çıkmadan önce cihazda küçültülüp sıkıştırılır.",
+      "idea.c3t": "Unut gitsin", "idea.c3d": "Kayıt önce telefona yazılır. Sinyal yoksa kuyrukta bekler, kapsama girince kendi kendine gönderilir.",
+
+      "how.eyebrow": "Nasıl çalışır",
+      "how.title": "Uygulama istasyonunu takip eder",
+      "how.sub": "Proje ya da sistem seçmiyorsun. Giriş yaptığında SnapSync atamanı okur ve doğru ekranları açar. Aşağıdan bir istasyon seç, nasıl göründüğüne bak.",
+
+      "scr.eyebrow": "Ekranlar",
+      "scr.title": "Karşına ne çıkacak",
+      "scr.sub": "Fotoğraf çekme ekranı istasyona göre değişiyor. Yukarıdan istasyon seçtiğinde aşağıdaki ekranlar da ona göre güncellenir.",
+
+      "ins.eyebrow": "Kurulum",
+      "ins.title": "Cihaza yüklemek",
+      "ins.sub": "Yalnızca Android. Adımları sırayla izleyin, yaklaşık beş dakika sürer.",
+      "ins.1t": "Gmail hesabına giriş yapın",
+      "ins.1d": "Cihazdaki Gmail uygulamasını açın ve aşağıdaki hesapla giriş yapın. Hesap zaten ekliyse bu adımı atlayın.",
+      "ins.credUser": "Hesap", "ins.credPass": "Şifre",
+      "ins.credAsk": "Teams üzerinden Fatih Bal'dan isteyin",
+      "ins.2t": "Mailden APK dosyasını indirin",
+      "ins.2d": "Gelen kutusunda <b>Fatih Bal</b> tarafından gönderilmiş bir mail var. İçindeki <b>.apk</b> dosyasının yanındaki indirme simgesine dokunun ve dosyanın inmesini bekleyin.",
+      "ins.3t": "Otomatik Engelleyici'yi kapatın",
+      "ins.3d": "Samsung cihazlarda bu ayar dışarıdan uygulama kurulmasını engeller ve açık kaldığı sürece kurulum tamamlanmaz. Kapatın, kurulum bittikten sonra geri açabilirsiniz.",
+      "ins.3c": "Ayarlar › Güvenlik ve gizlilik › Otomatik Engelleyici › Kapat",
+      "ins.4t": "Chrome'a kurulum izni verin",
+      "ins.4d": "İndirilen dosyaya dokunduğunuzda Android, bu kaynaktan kuruluma izin vermenizi isteyecek. Açılan ekranda izni verin ve geri dönüp dosyaya tekrar dokunun.",
+      "ins.4c": "Ayarlar › Uygulamalar › Chrome › Bilinmeyen uygulamaları yükle › İzin ver",
+      "ins.5t": "Play Store uyarısı çıkarsa",
+      "ins.5d": "Kurulum sırasında Play Store sizi <b>bir uygulamayı güncellemeye</b> yönlendiriyorsa, indirdiğiniz APK dosyasını silin, 2. adıma dönüp yeniden indirin ve kurulumu tekrar deneyin. Hata vermiyorsa bu adımı atlayın.",
+      "ins.6t": "Giriş yapın ve kamera izni verin",
+      "ins.6d": "Uygulamayı açın, <b>Microsoft ile Giriş Yap</b>'a dokunun ve SGS kurumsal hesabınızla girin. İstendiğinde kamera iznini verin — uygulamanın istediği tek izin budur.",
+      "ins.mdmT": "Yönetilen cihazlar",
+      "ins.mdmD": "Tablet kurumsal cihaz yönetimine kayıtlıysa elden kurulan APK otomatik kaldırılır ve ekranda “Yöneticiniz tarafından silindi” çıkar. O cihazlarda uygulamanın Intune üzerinden line-of-business app olarak dağıtılması ya da <code>com.sgs.snapsync</code> paketinin izinli listeye alınması gerekir. IT'ye sor.",
+      "ins.updT": "Güncellemeler",
+      "ins.updD": "Arayüz değişiklikleri kendiliğinden iner — uygulamayı tamamen kapatın, açın, bir daha kapatıp açın. Yalnızca uygulamanın kabuğundaki değişiklikler yeni APK gerektirir.",
+      "ins.helpT": "Takıldığınız yer olursa",
+      "ins.helpD": "Bu adımlarla çözemediğiniz bir sorunla karşılaşırsanız Teams üzerinden Fatih Bal'a ulaşabilirsiniz.",
+
+      "faq.eyebrow": "Bilmekte fayda var",
+      "faq.title": "Sahada sorulan sorular",
+      "foot": "İç uygulama — SGS Türkiye. Dışarıya dağıtılmaz.",
+
+      "ui.signin": "Microsoft ile Giriş Yap",
+      "ui.staff": "Personel", "ui.projstation": "Proje · İstasyon",
+      "ui.today": "Bugün", "ui.records": "6 kayıt", "ui.photos": "Fotoğraf",
+      "ui.start": "Yeni İşlem Başlat", "ui.queue": "Gönderim Kuyruğu",
+      "ui.manual": "Barkodu Elle Gir",
+      "ui.repno": "Rapor Numarası",
+      "ui.take": "Fotoğraf Çek", "ui.next": "Sonraki Aşama", "ui.send": "Gönder (3)",
+      "ui.waiting": "Bekliyor", "ui.error": "Hata · Tekrar dene",
+      "ui.retrybar": "2 bekliyor · Tekrar dene",
+      "ui.nphotos": "fotoğraf", "ui.clearq": "Kuyruğu temizle",
+      "ui.heroswitch": "değiştir",
+      "ui.cancel": "Vazgeç", "ui.save": "Kaydet", "ui.edittitle": "Fotoğrafı Düzenle",
+      "ui.crophint": "Köşeleri sürükleyip alanı ayarlayın · “Kaydet” kırpar",
+      "ui.rotate": "Döndür", "ui.delete": "Sil",
+
+      "cap.signin": "Giriş", "capd.signin": "Tek düğme. SGS Microsoft hesabın, yazacak başka bir şey yok.",
+      "cap.home": "Ana ekran", "capd.home": "Adın, projen ve istasyonun SnapSync'ten gelir — değiştirilemez.",
+      "cap.scan": "Okutma", "capd.scan": "Barkodu çerçevenin içinde tut. Etiket bozuksa elle yazabilirsin.",
+      "cap.capture": "Fotoğraf çekme", "capd.capture": "Üstte rapor numarası, ortada canlı kamera, altta çektiğin fotoğrafların şeridi.",
+      "cap.editor": "Kırpma ve düzeltme", "capd.editor": "Şeritteki bir fotoğrafa dokununca açılır. Köşeleri sürükle, gerekirse döndür, kaydet.",
+      "cap.queue": "Kuyruk", "capd.queue": "Yalnızca henüz gitmemiş kayıtlar burada durur. Gönderilenler listeden düşer."
+    },
+
+    en: {
+      "nav.how": "How it works", "nav.screens": "Screens", "nav.faq": "FAQ", "nav.install": "Install",
+
+      "hero.eyebrow": "SGS Internal Tool",
+      "hero.title": "Scan it. Shoot it. <em>It syncs itself.</em>",
+      "hero.sub": "SnapSync Field is the mobile half of SnapSync. Scan a barcode, photograph the documents and walk away — records are finalised on the device and upload on their own once there is a connection.",
+      "hero.cta1": "Installation guide", "hero.cta2": "See how it works",
+      "hero.s1t": "Offline-first", "hero.s1d": "Works with no signal",
+      "hero.s2d": "Average photo size",
+      "hero.s3t": "4 systems", "hero.s3d": "One app",
+      "hero.scan": "waiting for barcode…",
+
+      "idea.eyebrow": "The idea",
+      "idea.title": "Three actions on site. Everything else is automatic.",
+      "idea.sub": "No forms to fill in, no system to choose, nothing to remember at the end of the day. Your station decides what the app shows you.",
+      "idea.c1t": "Scan", "idea.c1d": "Point the camera at the barcode. The app reads it, checks it against the rules for your station and locks it in.",
+      "idea.c2t": "Photograph", "idea.c2d": "Take the photos the station asks for. Each one is resized and compressed on the device before it ever touches the network.",
+      "idea.c3t": "Forget about it", "idea.c3d": "The record is written to the phone first. With no signal it waits in the queue and sends itself once you are back in coverage.",
+
+      "how.eyebrow": "How it works",
+      "how.title": "The app follows your station",
+      "how.sub": "You never pick a project or a system. When you sign in, SnapSync reads your assignment and opens the right screens. Pick a station below to see what that looks like.",
+
+      "scr.eyebrow": "Screens",
+      "scr.title": "What you will actually see",
+      "scr.sub": "The capture screen changes with the station. Pick a station above and the screens below follow it.",
+
+      "ins.eyebrow": "Installation",
+      "ins.title": "Getting it onto a device",
+      "ins.sub": "Android only. Follow the steps in order; it takes about five minutes.",
+      "ins.1t": "Sign in to the Gmail account",
+      "ins.1d": "Open the Gmail app on the device and sign in with the account below. If the account is already added, skip this step.",
+      "ins.credUser": "Account", "ins.credPass": "Password",
+      "ins.credAsk": "Ask Fatih Bal on Teams",
+      "ins.2t": "Download the APK from the email",
+      "ins.2d": "There is an email in the inbox sent by <b>Fatih Bal</b>. Tap the download icon next to the <b>.apk</b> attachment and wait for it to finish.",
+      "ins.3t": "Turn off Auto Blocker",
+      "ins.3d": "On Samsung devices this setting blocks apps installed from outside the store, and the install will not complete while it is on. Turn it off; you can switch it back on once the app is installed.",
+      "ins.3c": "Settings › Security and privacy › Auto Blocker › Off",
+      "ins.4t": "Allow Chrome to install apps",
+      "ins.4d": "When you tap the downloaded file, Android asks you to allow installs from this source. Grant the permission on the screen that opens, then go back and tap the file again.",
+      "ins.4c": "Settings › Apps › Chrome › Install unknown apps › Allow",
+      "ins.5t": "If a Play Store prompt appears",
+      "ins.5d": "If the install redirects you to <b>update an app</b> through the Play Store, delete the downloaded APK, go back to step 2, download it again and retry the install. If no error appears, skip this step.",
+      "ins.6t": "Sign in and allow the camera",
+      "ins.6d": "Open the app, tap <b>Microsoft ile Giriş Yap</b> and sign in with your SGS corporate account. Grant the camera permission when prompted — it is the only permission the app asks for.",
+      "ins.mdmT": "Managed devices",
+      "ins.mdmD": "If the tablet is enrolled in company device management, a sideloaded APK is removed automatically and the screen shows “Yöneticiniz tarafından silindi”. On those devices the app has to be distributed through Intune as a line-of-business app, or the package <code>com.sgs.snapsync</code> has to be allow-listed. Ask IT.",
+      "ins.updT": "Updates",
+      "ins.updD": "Interface changes arrive on their own — close the app fully, reopen it, close it once more and reopen. Only changes to the app shell itself need a new APK.",
+      "ins.helpT": "If you get stuck",
+      "ins.helpD": "If you hit a problem these steps do not solve, you can reach Fatih Bal on Teams.",
+
+      "faq.eyebrow": "Good to know",
+      "faq.title": "Questions that come up on site",
+      "foot": "Internal tool — SGS Türkiye. Not for public distribution.",
+
+      "ui.signin": "Sign in with Microsoft",
+      "ui.staff": "Staff", "ui.projstation": "Project · Station",
+      "ui.today": "Today", "ui.records": "6 records", "ui.photos": "Photos",
+      "ui.start": "Start New Job", "ui.queue": "Upload Queue",
+      "ui.manual": "Enter Barcode Manually",
+      "ui.repno": "Report Number",
+      "ui.take": "Take Photo", "ui.next": "Next Stage", "ui.send": "Send (3)",
+      "ui.waiting": "Waiting", "ui.error": "Failed · Retry",
+      "ui.retrybar": "2 waiting · Retry",
+      "ui.nphotos": "photos", "ui.clearq": "Clear queue",
+      "ui.heroswitch": "change",
+      "ui.cancel": "Cancel", "ui.save": "Save", "ui.edittitle": "Edit Photo",
+      "ui.crophint": "Drag the corners to set the area · “Save” crops it",
+      "ui.rotate": "Rotate", "ui.delete": "Delete",
+
+      "cap.signin": "Sign in", "capd.signin": "One button. Your SGS Microsoft account, nothing else to type.",
+      "cap.home": "Home", "capd.home": "Your name, project and station come from SnapSync — they are not editable.",
+      "cap.scan": "Scan", "capd.scan": "Hold the barcode inside the frame. If the label is damaged, type it in instead.",
+      "cap.capture": "Capture", "capd.capture": "Report number on top, live camera in the middle, a strip of the photos you have taken below.",
+      "cap.editor": "Crop and fix", "capd.editor": "Opens when you tap a photo in the strip. Drag the corners, rotate if needed, save.",
+      "cap.queue": "Queue", "capd.queue": "Only records that have not gone through yet stay here. Delivered ones drop off the list."
+    }
+  };
+
+  var FAQ = {
+    tr: [
+      ["Sinyal yokken ne oluyor?", "Hiçbir şey durmuyor. Kayıt sen bitirdiğin anda cihaza yazılır ve kuyrukta bekler. Uygulamayı her öne getirdiğinde kendi kendine yeniden dener; kapsamaya girince uygulamayı açman yeterli. Otomatik deneme beş başarısızlıktan sonra durur, elle deneme her zaman çalışır."],
+      ["Fotoğraflar nerede duruyor?", "Galeride değil, uygulamanın kendi özel alanında. Sunucu fotoğrafı kabul ettiği anda cihazdaki kopyası silinir. Gönderilen kayıtlar 24 saat sonra temizlenir; gitmemiş olanlar gidene kadar durur."],
+      ["Ne kadar mobil veri harcıyor?", "Fotoğraflar uzun kenarı en fazla 2500 piksel olacak şekilde küçültülür ve 0.8 kalitede JPEG olarak kaydedilir. Pratikte fotoğraf başına medyan 375 KB, ortalama 440 KB — bin fotoğraf kabaca 400 MB eder."],
+      ["Başka bir istasyon veya proje seçebilir miyim?", "Hayır, bu bilerek böyle. Atama SnapSync profilinden geliyor. Yanlışsa sunucu tarafında düzeltilmesi gerekir; cihazdan değiştirmek fotoğrafların yanlış sisteme yazılması riskini doğurur."],
+      ["“İstasyon tanımlı değil” diyor.", "Atamanız sunucuda var ama uygulama henüz tanımıyor. Yeni bir sistem açıldığında, uygulama güncellenmeden önce olur. Ekranda projen, istasyonun ve atama numaran yazar — bunları geliştirici ekibe ilet, tek satırlık bir düzeltme."],
+      ["Giriş yapılamıyor, neye bakayım?", "Hata kutusundaki sebebi oku — sertifika sorunu, DNS sorunu ve engellenen bağlantıyı birbirinden ayırır. Önce cihazın tarayıcısından gkgm.sgs.com.tr/health adresini dene. Orası açılıyor ama uygulama açılmıyorsa hatanın ekran görüntüsünü geliştirici ekibe gönder."],
+      ["Çektiğim fotoğrafı düzeltebilir miyim?", "Evet. Alttaki şeritte fotoğrafa dokununca düzenleme ekranı açılır. Dört köşeyi sürükleyerek kırpma alanını ayarlarsın, gerekirse döndürürsün, “Kaydet” dediğinde kırpılmış hali kaydedilir. Beğenmediysen aynı ekrandan “Sil” ile atabilirsin. Kırpmanın bir faydası daha var: gereksiz kenarlar atıldığı için dosya küçülüyor, kırpılmış fotoğraflar 60-95 KB'a kadar iniyor."],
+      ["Ana ekrandaki arka plan resmi nasıl değişiyor?", "Görselin sağ üst köşesindeki küçük “7/18 · değiştir” yazısına dokun; her dokunuşta sıradaki görsele geçer. Seçim cihazda saklanır, uygulamayı kapatıp açınca aynı kalır ve yalnızca o cihazı etkiler. Şu an 18 görsel var; bu, kalıcı arka planın seçilmesi için konmuş geçici bir galeri."],
+      ["Tanılama ekranı var mı?", "Var, bilerek gizli. Ana ekranda logoya üç saniye içinde beş kez dokun. Canlı günlüğü, hangi paketin çalıştığını ve güncellemeyi elle çekme düğmesini gösterir. Saha personeli için değil, destek için."]
+    ],
+    en: [
+      ["What happens when there is no signal?", "Nothing stops. The record is written to the device the moment you finish and waits in the queue. The app retries on its own every time you bring it to the foreground, so simply opening it back in coverage is enough. Automatic retries stop after five failures; manual retry always works."],
+      ["Where are the photos kept?", "In the app's own private storage, not the gallery. Once the server accepts a photo its local copy is deleted. Sent records are cleared after 24 hours; anything still unsent is kept until it goes through."],
+      ["How much mobile data does this use?", "Photos are resized to a maximum of 2500 px on the long edge and saved as JPEG at 0.8 quality. In practice that is a median of about 375 KB and an average of about 440 KB per photo — roughly 400 MB for a thousand photos."],
+      ["Can I choose a different station or project?", "No, and that is deliberate. The assignment comes from your SnapSync profile. If it is wrong it has to be corrected on the server side; changing it on the device would risk filing photos into the wrong system."],
+      ["It says my station is not defined.", "Your assignment exists on the server but the app does not know it yet. This happens when a new system is opened before the app is updated. The screen shows your project, station and assignment number — send those to the development team and it is a one-line fix."],
+      ["Sign-in fails. What do I check?", "Read the reason in the error box — it distinguishes a certificate problem, a DNS problem and a blocked connection. First try gkgm.sgs.com.tr/health in the device browser. If that works but the app does not, send a screenshot of the error to the development team."],
+      ["Can I fix a photo after taking it?", "Yes. Tap the photo in the strip at the bottom and the editor opens. Drag the four corners to set the crop area, rotate if you need to, and “Save” keeps the cropped version. If it is no good, “Delete” on the same screen throws it away. Cropping has a side benefit: with the useless edges gone the file shrinks, and cropped photos come down to 60-95 KB."],
+      ["How do I change the background image on the home screen?", "Tap the small “7/18 · change” label in the top-right corner of the image; each tap moves to the next one. The choice is stored on the device, survives restarts and affects only that device. There are 18 images at the moment — a temporary gallery while the final background is being chosen."],
+      ["Is there a diagnostics screen?", "Yes, hidden on purpose. On the home screen tap the logo five times within three seconds. It shows a live log, which app bundle is running, and a button to pull updates manually. It is meant for support, not for field staff."]
+    ]
+  };
+
+  /* ── State ──────────────────────────────────────────────────── */
+  var lang = "tr";
+  var flowKey = "LMF";
+
+  /* ?print=tr | ?print=en flattens the page for paper; the PDF is
+     generated from exactly this. */
+  var printMatch = /[?&]print=(tr|en)/.exec(location.search);
+  var printing = printMatch !== null;
+  if (printing) {
+    lang = printMatch[1];
+  } else {
+    try {
+      var saved = localStorage.getItem("snapsync.lang");
+      if (saved === "tr" || saved === "en") lang = saved;
+    } catch (e) { /* private mode — ignore */ }
+  }
+
+  function t(key) { return (I18N[lang] && I18N[lang][key]) || key; }
+
+  /* ── Mockup builders ────────────────────────────────────────── */
+  function bars(n, unit, tag) {
+    var out = "";
+    for (var i = 0; i < n; i++) {
+      out += "<" + tag + ' style="width:' + (PATTERN[i % PATTERN.length] * unit) + 'px"></' + tag + ">";
+    }
+    return out;
+  }
+
+  var SBAR = '<div class="sbar"><span>09:41</span><span>▮▮▮</span></div>';
+
+  function screenSignin() {
+    return '<div class="device"><div class="screen dark">' + SBAR +
+      '<div class="m-login">' +
+        '<div class="m-logo">SGS</div>' +
+        '<div class="m-scanbox"><div class="bars">' + bars(18, 2, "i") + '</div><div class="beam"></div>' +
+          '<i class="corner c-tl"></i><i class="corner c-tr"></i><i class="corner c-bl"></i><i class="corner c-br"></i></div>' +
+        '<div class="m-title">SnapSync</div>' +
+        '<div class="m-btn" style="width:100%">' + t("ui.signin") + '</div>' +
+      '</div></div></div>';
+  }
+
+  function screenHome(flow) {
+    return '<div class="device"><div class="screen">' + SBAR +
+      '<div class="m-hero"><span>SGS</span>' +
+        '<div class="m-heroswitch">7/18 · ' + t("ui.heroswitch") + '</div></div>' +
+      '<div class="m-pad">' +
+        '<div class="m-card">' +
+          '<div class="m-k">' + t("ui.staff") + '</div><div class="m-v">Fatih Bal</div>' +
+          '<div class="m-k" style="margin-top:4px">' + t("ui.projstation") + '</div>' +
+          '<div class="m-v">' + flow.app + '</div>' +
+        '</div>' +
+        '<div class="m-row">' +
+          '<div class="m-card"><div class="m-k">' + t("ui.today") + '</div><div class="m-v">' + t("ui.records") + '</div></div>' +
+          '<div class="m-card"><div class="m-k">' + t("ui.photos") + '</div><div class="m-v">14</div></div>' +
+        '</div>' +
+        '<div class="m-btn">' + t("ui.start") + '</div>' +
+        '<div class="m-btn sec">' + t("ui.queue") + '</div>' +
+      '</div></div></div>';
+  }
+
+  function screenScan() {
+    return '<div class="device"><div class="screen dark">' + SBAR +
+      '<div class="m-cam"><div class="m-retic">' +
+        '<div class="m-barcode">' + bars(16, 2, "b") + '</div>' +
+        '<i></i><i></i><i></i><i></i>' +
+      '</div></div>' +
+      '<div style="padding:11px"><div class="m-btn sec">' + t("ui.manual") + '</div></div>' +
+      '</div></div>';
+  }
+
+  /* The real capture screen: report bar, live camera, photo strip,
+     then two buttons side by side. Step badge only when the
+     station has more than one stage. */
+  function screenCapture(flow) {
+    var step = flow.steps[0];
+    var badge = flow.multi
+      ? '<div class="m-stepbadge"><b>1/' + flow.steps.length + '</b><span>' + step[lang] + '</span></div>'
+      : "";
+    var right = flow.multi ? t("ui.next") : t("ui.send");
+
+    return '<div class="device"><div class="screen">' + SBAR +
+      '<div class="m-repbar">' +
+        '<div class="m-accent"></div>' +
+        '<div class="m-repinfo"><div class="m-k">' + t("ui.repno") + '</div>' +
+          '<div class="m-repno">' + DEMO_NO + '</div></div>' +
+        badge +
+      '</div>' +
+      '<div class="m-live"></div>' +
+      '<div class="m-strip">' +
+        '<div class="m-sthumb"><i>1</i></div>' +
+        '<div class="m-sthumb"><i>2</i></div>' +
+        (flow.multi ? "" : '<div class="m-sthumb"><i>3</i></div>') +
+      '</div>' +
+      '<div class="m-acts">' +
+        '<div class="m-btn">' + t("ui.take") + '</div>' +
+        '<div class="m-btn sec">' + right + '</div>' +
+      '</div></div></div>';
+  }
+
+  /* Tapping a thumbnail in the strip opens the editor
+     (src/components/PhotoEditor.tsx): drag the four corners to set
+     the crop, then rotate, delete or save. */
+  function screenEditor() {
+    return '<div class="device"><div class="screen dark">' + SBAR +
+      '<div class="m-edtop">' +
+        '<span>' + t("ui.cancel") + '</span>' +
+        '<b>' + t("ui.edittitle") + '</b>' +
+        '<span class="save">' + t("ui.save") + '</span>' +
+      '</div>' +
+      '<div class="m-edstage"><div class="m-edphoto">' +
+        '<div class="m-edcrop"><i></i><i></i><i></i><i></i></div>' +
+      '</div></div>' +
+      '<div class="m-edhint">' + t("ui.crophint") + '</div>' +
+      '<div class="m-edtools">' +
+        '<div>' + t("ui.rotate") + '</div>' +
+        '<div class="del">' + t("ui.delete") + '</div>' +
+      '</div></div></div>';
+  }
+
+  /* Only records that have not been delivered are listed —
+     app/history.tsx filters on status !== "sent". */
+  function screenQueue() {
+    return '<div class="device"><div class="screen">' + SBAR +
+      '<div class="m-pad">' +
+        '<div class="m-v" style="font-size:13px">' + t("ui.queue") + '</div>' +
+        '<div class="m-retrybar">' + t("ui.retrybar") + '</div>' +
+        '<div class="m-list">' +
+          '<div class="m-item"><div class="no">26TR341300306412</div>' +
+            '<div class="mt">5 ' + t("ui.nphotos") + ' · 14:22</div>' +
+            '<div class="m-pill">' + t("ui.waiting") + '</div></div>' +
+          '<div class="m-item"><div class="no">26TR341300306418</div>' +
+            '<div class="mt">2 ' + t("ui.nphotos") + ' · 14:30</div>' +
+            '<div class="m-pill err">' + t("ui.error") + '</div></div>' +
+        '</div>' +
+        '<div style="flex:1"></div>' +
+        '<div class="m-clear">' + t("ui.clearq") + '</div>' +
+      '</div></div></div>';
+  }
+
+  /* ── Renderers ──────────────────────────────────────────────── */
+  var pickers = document.querySelectorAll("[data-picker]");
+  var metaEl = document.getElementById("flowMeta");
+  var stepsEl = document.getElementById("flowSteps");
+  var devEl = document.getElementById("flowDevice");
+  var galleryEl = document.getElementById("gallery");
+  var faqEl = document.getElementById("faqList");
+
+  function renderPickers() {
+    pickers.forEach(function (picker) {
+      picker.innerHTML = ORDER.map(function (key) {
+        var f = FLOWS[key];
+        return '<button type="button" class="tab" role="tab" data-flow="' + key + '"' +
+          ' aria-selected="' + (key === flowKey) + '">' +
+          "<b>" + f.name + "</b><span>" + f.app + "</span></button>";
+      }).join("");
+    });
+  }
+
+  /* Paper has no tabs: every station is printed, one after another. */
+  function renderFlowsForPrint() {
+    metaEl.style.display = "none";
+    stepsEl.outerHTML = '<div id="flowSteps">' + ORDER.map(function (key) {
+      var flow = FLOWS[key];
+      var txt = FLOW_TEXT[lang][key];
+      var L = labelsFor();
+
+      var steps =
+        '<li class="step"><div class="step-dot">1</div><div class="step-body">' +
+          "<h4>" + L.scan + "</h4><p>" + txt.entry + "</p></div></li>";
+
+      flow.steps.forEach(function (s, i) {
+        steps += '<li class="step"><div class="step-dot">' + (i + 2) + '</div><div class="step-body">' +
+          "<h4>" + s[lang] + "</h4><p>" + txt["note" + i] + "</p>" +
+          '<span class="step-tag">' + s.rule[lang] + "</span></div></li>";
+      });
+
+      steps += '<li class="step"><div class="step-dot">' + (flow.steps.length + 2) + '</div>' +
+        '<div class="step-body"><h4>' + L.send + "</h4><p>" + L.sendNote + "</p></div></li>";
+
+      return '<div class="pflow">' +
+        '<div class="pflow-h"><b>' + flow.name + "</b><code>" + flow.app + "</code></div>" +
+        '<div class="flow-meta"><span class="chip">' + txt.sub + "</span>" +
+          '<span class="chip">' + L.goes + " <b>" + flow.dest + "</b></span></div>" +
+        '<ol class="steps">' + steps + "</ol></div>";
+    }).join("") + "</div>";
+  }
+
+  function labelsFor() {
+    return lang === "tr"
+      ? { goes: "Gider", scan: "Barkodu okut", send: "Gönder",
+          sendNote: "Kayıt önce cihaza yazılır, sonra yüklenir. Bağlantı yoksa kuyrukta bekler ve sonra kendi kendine gider." }
+      : { goes: "Goes to", scan: "Scan the barcode", send: "Send",
+          sendNote: "The record is written to the device first, then uploaded. With no connection it waits in the queue and goes on its own later." };
+  }
+
+  function renderFlow() {
+    var flow = FLOWS[flowKey];
+    var txt = FLOW_TEXT[lang][flowKey];
+    var labels = labelsFor();
+
+    metaEl.innerHTML =
+      '<span class="chip">' + txt.sub + "</span>" +
+      '<span class="chip">' + labels.goes + " <b>" + flow.dest + "</b></span>";
+
+    var html =
+      '<li class="step"><div class="step-dot">1</div><div class="step-body">' +
+        "<h4>" + labels.scan + "</h4><p>" + txt.entry + "</p></div></li>";
+
+    flow.steps.forEach(function (s, i) {
+      html += '<li class="step"><div class="step-dot">' + (i + 2) + '</div><div class="step-body">' +
+        "<h4>" + s[lang] + "</h4><p>" + txt["note" + i] + "</p>" +
+        '<span class="step-tag">' + s.rule[lang] + "</span></div></li>";
+    });
+
+    html += '<li class="step"><div class="step-dot">' + (flow.steps.length + 2) + '</div>' +
+      '<div class="step-body"><h4>' + labels.send + "</h4><p>" + labels.sendNote + "</p></div></li>";
+
+    stepsEl.innerHTML = html;
+    devEl.innerHTML = screenCapture(flow);
+    [stepsEl, devEl.firstChild].forEach(function (el) {
+      if (!el) return;
+      el.classList.remove("fade");
+      void el.offsetWidth;
+      el.classList.add("fade");
+    });
+  }
+
+  function shotHtml(markup, title, note) {
+    return '<div class="shot">' + markup +
+      '<div class="shot-cap"><b>' + title + "</b><span>" + note + "</span></div></div>";
+  }
+
+  function renderGallery() {
+    var flow = FLOWS[flowKey];
+
+    if (printing) {
+      /* No tabs on paper, so both capture variants are shown. */
+      var cap = lang === "tr"
+        ? { one: "Fotoğraf çekme · tek aşamalı", oneN: "LMF ve Transitnet. Aşama rozeti yok, sağdaki düğme doğrudan Gönder.",
+            two: "Fotoğraf çekme · iki aşamalı", twoN: "LIMS ve MSM. Üstte 1/2 rozeti, sağdaki düğme Sonraki Aşama." }
+        : { one: "Capture · single stage", oneN: "LMF and Transitnet. No stage badge, the right button sends straight away.",
+            two: "Capture · two stages", twoN: "LIMS and MSM. A 1/2 badge on top, the right button moves to the next stage." };
+
+      galleryEl.innerHTML =
+        shotHtml(screenSignin(), t("cap.signin"), t("capd.signin")) +
+        shotHtml(screenHome(FLOWS.LIMS), t("cap.home"), t("capd.home")) +
+        shotHtml(screenScan(), t("cap.scan"), t("capd.scan")) +
+        shotHtml(screenCapture(FLOWS.LMF), cap.one, cap.oneN) +
+        shotHtml(screenCapture(FLOWS.LIMS), cap.two, cap.twoN) +
+        shotHtml(screenEditor(), t("cap.editor"), t("capd.editor")) +
+        shotHtml(screenQueue(), t("cap.queue"), t("capd.queue"));
+      return;
+    }
+
+    galleryEl.innerHTML = [
+      [screenSignin(),      "cap.signin"],
+      [screenHome(flow),    "cap.home"],
+      [screenScan(),        "cap.scan"],
+      [screenCapture(flow), "cap.capture"],
+      [screenEditor(),      "cap.editor"],
+      [screenQueue(),       "cap.queue"]
+    ].map(function (s) {
+      return shotHtml(s[0], t(s[1]), t(s[1].replace("cap.", "capd.")));
+    }).join("");
+  }
+
+  function renderFaq() {
+    var open = printing ? " open" : "";
+    faqEl.innerHTML = FAQ[lang].map(function (row) {
+      return "<details" + open + "><summary>" + row[0] + "</summary><p>" + row[1] + "</p></details>";
+    }).join("");
+  }
+
+  function applyText() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+      el.innerHTML = t(el.getAttribute("data-i18n-html"));
+    });
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang));
+    });
+  }
+
+  function renderAll() {
+    applyText();
+    if (printing) {
+      document.body.classList.add("printing");
+      renderFlowsForPrint();
+      renderGallery();
+      renderFaq();
+      document.getElementById("install").classList.add("page-break");
+      return;
+    }
+    renderPickers();
+    renderFlow();
+    renderGallery();
+    renderFaq();
+  }
+
+  /* ── Events ─────────────────────────────────────────────────── */
+  document.addEventListener("click", function (e) {
+    var tab = e.target.closest ? e.target.closest(".tab") : null;
+    if (tab) {
+      flowKey = tab.getAttribute("data-flow");
+      renderPickers();
+      renderFlow();
+      renderGallery();
+      return;
+    }
+    var lb = e.target.closest ? e.target.closest(".lang button") : null;
+    if (lb) {
+      lang = lb.getAttribute("data-lang");
+      try { localStorage.setItem("snapsync.lang", lang); } catch (err) { /* ignore */ }
+      renderAll();
+    }
+  });
+
+  /* ── Boot ───────────────────────────────────────────────────── */
+  var heroBars = document.getElementById("heroBars");
+  if (heroBars) heroBars.innerHTML = bars(PATTERN.length, 3, "i");
+
+  renderAll();
+
+  var targets = document.querySelectorAll(".reveal");
+  if (!("IntersectionObserver" in window)) {
+    targets.forEach(function (el) { el.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    targets.forEach(function (el, i) {
+      el.style.transitionDelay = (i % 3) * 70 + "ms";
+      io.observe(el);
+    });
+  }
+})();
+</script>
+</body>
+</html>
