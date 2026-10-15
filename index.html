@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SnapSync Field — Kurulum</title>
+<meta name="description" content="SnapSync Field saha uygulamasının Android cihaza kurulum rehberi." />
+<style>
+/* ──────────────────────────────────────────────────────────────
+   SnapSync Field — kurulum rehberi.
+   Tek is yapar: uygulamayi cihaza kurdurur. Baska bolum yok.
+   Tanitim icerigi ayri dosyada: sunum.html
+
+   ?print=tr | ?print=en  -> A4 duzeni (PDF icin)
+   ────────────────────────────────────────────────────────────── */
+:root {
+  --orange:     #FF6600;
+  --dark:       #363636;
+  --blue:       #005587;
+
+  --bg:         #FFFFFF;
+  --bg-alt:     #F6F6F6;
+  --surface:    #FFFFFF;
+  --text:       #363636;
+  --text-muted: #6E6E6E;
+  --border:     #E2E2E2;
+  --shadow:     0 4px 18px rgba(54,54,54,.08);
+
+  --radius-sm: 6px;
+  --radius:    12px;
+  --maxw:      920px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1E1E1E; --bg-alt: #262626; --surface: #2C2C2C;
+    --text: #F2F2F2; --text-muted: #AAAAAA; --border: #3C3C3C;
+    --shadow: 0 4px 18px rgba(0,0,0,.4);
+  }
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 400 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h4 { margin: 0; line-height: 1.15; letter-spacing: -.02em; }
+p { margin: 0; }
+
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 16px; }
+
+/* ── Ust cubuk ──────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+}
+.nav-in { display: flex; align-items: center; gap: 14px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark { position: relative; font-size: 19px; font-weight: 900; letter-spacing: .02em; color: var(--text); }
+.brand-mark::after { content: ""; position: absolute; right: -7px; top: -4px; bottom: -4px; width: 2px; background: var(--orange); }
+.brand-name { font-size: 15px; color: var(--text-muted); font-weight: 600; }
+
+.lang { margin-left: auto; display: flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.lang button {
+  border: 0; background: transparent; cursor: pointer; font-family: inherit;
+  font-size: 12px; font-weight: 800; letter-spacing: .04em;
+  padding: 7px 14px; color: var(--text-muted); transition: background .16s, color .16s;
+}
+.lang button:hover { color: var(--text); }
+.lang button[aria-pressed="true"] { background: var(--dark); color: #fff; }
+
+/* ── Baslik ─────────────────────────────────────────────────── */
+.head { background: var(--dark); color: #fff; padding: 52px 0 56px; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 16px;
+}
+.eyebrow::before { content: ""; width: 22px; height: 2px; background: var(--orange); }
+.head h1 { font-size: clamp(28px, 4.4vw, 40px); font-weight: 900; }
+.head p { margin-top: 16px; font-size: 16px; line-height: 1.7; color: rgba(255,255,255,.74); max-width: 52ch; }
+.meta { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; }
+.meta span {
+  font-size: 12.5px; font-weight: 700; color: rgba(255,255,255,.82);
+  border: 1px solid rgba(255,255,255,.26); border-radius: 999px; padding: 6px 14px;
+}
+
+/* ── Adimlar ────────────────────────────────────────────────── */
+main { padding: 56px 0 72px; }
+
+.steps { display: grid; gap: 16px; }
+@media (min-width: 760px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+
+.step {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  display: flex; gap: 16px; align-items: flex-start;
+  box-shadow: var(--shadow);
+}
+.step-n {
+  flex: 0 0 32px; height: 32px; border-radius: 9px;
+  background: var(--dark); color: #fff;
+  display: grid; place-items: center; font-weight: 900; font-size: 14px;
+}
+.step h4 { margin: 4px 0 8px; font-size: 17px; font-weight: 800; }
+.step p { font-size: 15px; color: var(--text-muted); }
+.step b { color: var(--text); font-weight: 800; }
+
+code, .path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px; background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: 5px; color: var(--text);
+}
+code { padding: 2px 7px; }
+.path { display: block; margin-top: 11px; padding: 9px 12px; line-height: 1.6; }
+
+/* Giris bilgileri */
+.creds { margin-top: 13px; display: flex; flex-direction: column; gap: 8px; }
+.creds > div { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.creds span {
+  font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--text-muted); min-width: 54px;
+}
+.creds code { font-size: 13.5px; font-weight: 700; padding: 5px 10px; }
+/* Sifre sayfada yazmiyor: bu adres herkese acik. */
+.creds em { font-style: normal; font-size: 14px; font-weight: 600; color: var(--text); }
+
+/* ── Notlar ─────────────────────────────────────────────────── */
+.note {
+  margin-top: 18px; border-left: 3px solid var(--orange);
+  background: color-mix(in srgb, var(--orange) 7%, transparent);
+  padding: 18px 22px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.note.blue { border-left-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, transparent); }
+.note b { font-weight: 800; display: block; margin-bottom: 5px; }
+.note p { font-size: 14.5px; color: var(--text-muted); }
+
+/* ── Yardim ─────────────────────────────────────────────────── */
+.help {
+  margin-top: 34px; display: flex; gap: 16px; align-items: flex-start;
+  background: var(--dark); color: #fff; border-radius: var(--radius); padding: 24px 26px;
+}
+.help-mark {
+  flex: 0 0 34px; height: 34px; border-radius: 50%;
+  background: var(--orange); color: #fff;
+  display: grid; place-items: center; font-weight: 900; font-size: 17px;
+}
+.help b { font-size: 16px; font-weight: 800; display: block; margin-bottom: 5px; }
+.help p { font-size: 14.5px; color: rgba(255,255,255,.76); }
+
+/* ── Alt bilgi ──────────────────────────────────────────────── */
+footer { border-top: 1px solid var(--border); padding: 28px 0; font-size: 13.5px; color: var(--text-muted); }
+.foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
+
+/* ── Giris animasyonu ───────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* ── Baski ──────────────────────────────────────────────────── */
+@page { size: A4; margin: 15mm 14mm; }
+
+body.printing { font-size: 12px; }
+body.printing .nav { display: none; }
+body.printing .reveal { opacity: 1; transform: none; }
+body.printing .wrap { max-width: none; padding: 0; }
+body.printing .head { padding: 22px 0 24px; }
+body.printing .head h1 { font-size: 26px; }
+body.printing .head p { font-size: 13px; margin-top: 10px; }
+body.printing .meta { margin-top: 16px; }
+body.printing .meta span { font-size: 11px; padding: 4px 11px; }
+body.printing main { padding: 24px 0 10px; }
+body.printing .steps { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+body.printing .step { padding: 14px; gap: 12px; box-shadow: none; break-inside: avoid; }
+body.printing .step-n { flex: 0 0 24px; height: 24px; font-size: 12px; }
+body.printing .step h4 { font-size: 13.5px; margin: 2px 0 5px; }
+body.printing .step p { font-size: 11.5px; }
+body.printing .path { font-size: 10.5px; padding: 6px 9px; margin-top: 8px; }
+body.printing .creds code { font-size: 12px; }
+body.printing .note { padding: 12px 15px; margin-top: 11px; break-inside: avoid; }
+body.printing .note p { font-size: 11.5px; }
+body.printing .help { padding: 15px 18px; margin-top: 18px; break-inside: avoid; }
+body.printing .help p { font-size: 12px; }
+body.printing footer { padding: 14px 0; font-size: 10.5px; margin-top: 14px; }
+
+@media print {
+  body.printing * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <div class="brand">
+      <span class="brand-mark">SGS</span>
+      <span class="brand-name">SnapSync Field</span>
+    </div>
+    <div class="lang">
+      <button type="button" data-lang="tr" aria-pressed="true">TR</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="head">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="eyebrow"></div>
+    <h1 data-i18n="title"></h1>
+    <p data-i18n="sub"></p>
+    <div class="meta">
+      <span data-i18n="m1"></span>
+      <span data-i18n="m2"></span>
+      <span data-i18n="m3"></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="steps">
+
+      <div class="step reveal"><div class="step-n">1</div><div>
+        <h4 data-i18n="s1t"></h4>
+        <p data-i18n="s1d"></p>
+        <div class="creds">
+          <div><span data-i18n="credUser"></span><code>snapsync.sgs@gmail.com</code></div>
+          <div><span data-i18n="credPass"></span><em data-i18n="credAsk"></em></div>
+        </div>
+      </div></div>
+
+      <div class="step reveal"><div class="step-n">2</div><div>
+        <h4 data-i18n="s2t"></h4>
+        <p data-i18n-html="s2d"></p>
+      </div></div>
+
+      <div class="step reveal"><div class="step-n">3</div><div>
+        <h4 data-i18n="s3t"></h4>
+        <p data-i18n="s3d"></p>
+        <span class="path" data-i18n="s3c"></span>
+      </div></div>
+
+      <div class="step reveal"><div class="step-n">4</div><div>
+        <h4 data-i18n="s4t"></h4>
+        <p data-i18n="s4d"></p>
+        <span class="path" data-i18n="s4c"></span>
+      </div></div>
+
+      <div class="step reveal"><div class="step-n">5</div><div>
+        <h4 data-i18n="s5t"></h4>
+        <p data-i18n-html="s5d"></p>
+      </div></div>
+
+      <div class="step reveal"><div class="step-n">6</div><div>
+        <h4 data-i18n="s6t"></h4>
+        <p data-i18n-html="s6d"></p>
+      </div></div>
+
+    </div>
+
+    <div class="note reveal"><b data-i18n="mdmT"></b><p data-i18n-html="mdmD"></p></div>
+    <div class="note blue reveal"><b data-i18n="updT"></b><p data-i18n="updD"></p></div>
+
+    <div class="help reveal">
+      <div class="help-mark">?</div>
+      <div>
+        <b data-i18n="helpT"></b>
+        <p data-i18n="helpD"></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="brand">
+      <span class="brand-mark">SGS</span>
+      <span class="brand-name">SnapSync Field</span>
+    </div>
+    <div data-i18n="foot"></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var I18N = {
+    tr: {
+      eyebrow: "Kurulum Rehberi",
+      title: "SnapSync Field'ı cihaza yükleyin",
+      sub: "Aşağıdaki adımları sırayla izleyin. Atlamadan gidin — 3. ve 4. adım yapılmazsa kurulum tamamlanmaz.",
+      m1: "Yalnızca Android", m2: "Yaklaşık 5 dakika", m3: "6 adım",
+
+      s1t: "Gmail hesabına giriş yapın",
+      s1d: "Cihazdaki Gmail uygulamasını açın ve aşağıdaki hesapla giriş yapın. Hesap zaten ekliyse bu adımı atlayın.",
+      credUser: "Hesap", credPass: "Şifre",
+      credAsk: "Teams üzerinden Fatih Bal'dan isteyin",
+
+      s2t: "Mailden APK dosyasını indirin",
+      s2d: "Gelen kutusunda <b>Fatih Bal</b> tarafından gönderilmiş bir mail var. İçindeki <b>.apk</b> dosyasının yanındaki indirme simgesine dokunun ve dosyanın inmesini bekleyin.",
+
+      s3t: "Otomatik Engelleyici'yi kapatın",
+      s3d: "Samsung cihazlarda bu ayar dışarıdan uygulama kurulmasını engeller; açık kaldığı sürece kurulum tamamlanmaz. Kapatın, kurulum bittikten sonra geri açabilirsiniz.",
+      s3c: "Ayarlar › Güvenlik ve gizlilik › Otomatik Engelleyici › Kapat",
+
+      s4t: "Chrome'a kurulum izni verin",
+      s4d: "İndirilen dosyaya dokunduğunuzda Android, bu kaynaktan kuruluma izin vermenizi isteyecek. Açılan ekranda izni verin, geri dönün ve dosyaya tekrar dokunun.",
+      s4c: "Ayarlar › Uygulamalar › Chrome › Bilinmeyen uygulamaları yükle › İzin ver",
+
+      s5t: "Play Store uyarısı çıkarsa",
+      s5d: "Kurulum sırasında Play Store sizi <b>bir uygulamayı güncellemeye</b> yönlendiriyorsa: indirdiğiniz APK dosyasını silin, 2. adıma dönüp yeniden indirin ve kurulumu tekrar deneyin. Böyle bir uyarı çıkmıyorsa bu adımı atlayın.",
+
+      s6t: "Giriş yapın ve kamera izni verin",
+      s6d: "Uygulamayı açın, <b>Microsoft ile Giriş Yap</b>'a dokunun ve SGS kurumsal hesabınızla girin. İstendiğinde kamera iznini verin — uygulamanın istediği tek izin budur.",
+
+      mdmT: "Kurumsal cihazlar",
+      mdmD: "Tablet kurumsal cihaz yönetimine kayıtlıysa elden kurulan uygulama otomatik kaldırılır ve ekranda “Yöneticiniz tarafından silindi” uyarısı çıkar. Bu cihazlarda kurulumun BT üzerinden yapılması gerekir; adımlara başlamadan önce BT ile görüşün.",
+      updT: "Güncellemeler",
+      updD: "Uygulama güncellemelerini kendisi alır. Yeni bir sürüm çıktığında uygulamayı tamamen kapatıp açmanız yeterli; APK'yı yeniden kurmanız gerekmez.",
+
+      helpT: "Takıldığınız yer olursa",
+      helpD: "Bu adımlarla çözemediğiniz bir sorunla karşılaşırsanız Teams üzerinden Fatih Bal'a ulaşabilirsiniz.",
+
+      foot: "İç uygulama — SGS Türkiye"
+    },
+
+    en: {
+      eyebrow: "Installation Guide",
+      title: "Install SnapSync Field on the device",
+      sub: "Follow the steps in order. Do not skip any — without steps 3 and 4 the install will not complete.",
+      m1: "Android only", m2: "About 5 minutes", m3: "6 steps",
+
+      s1t: "Sign in to the Gmail account",
+      s1d: "Open the Gmail app on the device and sign in with the account below. If the account is already added, skip this step.",
+      credUser: "Account", credPass: "Password",
+      credAsk: "Ask Fatih Bal on Teams",
+
+      s2t: "Download the APK from the email",
+      s2d: "There is an email in the inbox sent by <b>Fatih Bal</b>. Tap the download icon next to the <b>.apk</b> attachment and wait for it to finish.",
+
+      s3t: "Turn off Auto Blocker",
+      s3d: "On Samsung devices this setting blocks apps installed from outside the store; while it is on the install will not complete. Turn it off — you can switch it back on once the app is installed.",
+      s3c: "Settings › Security and privacy › Auto Blocker › Off",
+
+      s4t: "Allow Chrome to install apps",
+      s4d: "When you tap the downloaded file, Android asks you to allow installs from this source. Grant the permission on the screen that opens, go back and tap the file again.",
+      s4c: "Settings › Apps › Chrome › Install unknown apps › Allow",
+
+      s5t: "If a Play Store prompt appears",
+      s5d: "If the install redirects you to <b>update an app</b> through the Play Store: delete the downloaded APK, go back to step 2, download it again and retry the install. If no such prompt appears, skip this step.",
+
+      s6t: "Sign in and allow the camera",
+      s6d: "Open the app, tap <b>Microsoft ile Giriş Yap</b> and sign in with your SGS corporate account. Grant the camera permission when prompted — it is the only permission the app asks for.",
+
+      mdmT: "Corporate devices",
+      mdmD: "If the tablet is enrolled in company device management, an app installed by hand is removed automatically and the screen shows “Yöneticiniz tarafından silindi”. On those devices the install has to go through IT; talk to them before starting these steps.",
+      updT: "Updates",
+      updD: "The app updates itself. When a new version is released, closing the app fully and reopening it is enough — there is no need to install the APK again.",
+
+      helpT: "If you get stuck",
+      helpD: "If you hit a problem these steps do not solve, you can reach Fatih Bal on Teams.",
+
+      foot: "Internal application — SGS Türkiye"
+    }
+  };
+
+  var printMatch = /[?&]print=(tr|en)/.exec(location.search);
+  var printing = printMatch !== null;
+  var lang = "tr";
+
+  if (printing) {
+    lang = printMatch[1];
+    document.body.classList.add("printing");
+  } else {
+    try {
+      var saved = localStorage.getItem("snapsync.lang");
+      if (saved === "tr" || saved === "en") lang = saved;
+    } catch (e) { /* gizli sekme — yok say */ }
+  }
+
+  function apply() {
+    var dict = I18N[lang];
+    document.documentElement.lang = lang;
+    document.title = "SnapSync Field — " + dict.eyebrow;
+
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = dict[el.getAttribute("data-i18n")] || "";
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+      el.innerHTML = dict[el.getAttribute("data-i18n-html")] || "";
+    });
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang));
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".lang button") : null;
+    if (!b) return;
+    lang = b.getAttribute("data-lang");
+    try { localStorage.setItem("snapsync.lang", lang); } catch (err) { /* yok say */ }
+    apply();
+  });
+
+  apply();
+
+  var targets = document.querySelectorAll(".reveal");
+  if (printing || !("IntersectionObserver" in window)) {
+    targets.forEach(function (el) { el.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    targets.forEach(function (el, i) {
+      el.style.transitionDelay = (i % 2) * 70 + "ms";
+      io.observe(el);
+    });
+  }
+})();
+</script>
+</body>
+</html>
